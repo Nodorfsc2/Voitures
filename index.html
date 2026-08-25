@@ -46,12 +46,35 @@ main{padding:20px 24px;max-width:1500px;margin:0 auto}
 #lb .nav:hover{opacity:1}
 #lb .prev{left:0}#lb .next{right:0}
 footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
 @media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
 </style>
 </head>
 <body>
 <header>
   <h1>Collection miniatures 1/43 <small id="count"></small></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
   <div class="bar">
     <label>Fabricant
       <select id="fFab"><option value="">Tous</option></select></label>
@@ -136,6 +159,7 @@ $('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
 $('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
 $('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
 document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
 render();
 </script>
 </body>
