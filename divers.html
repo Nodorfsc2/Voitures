@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Divers (figurines, avions, dioramas…)</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#c8102e;--chip:#ececea}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--chip:#2c2c2c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:.3px}
+h1 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+.other{font-size:.85rem;margin-left:14px;color:var(--accent);text-decoration:none;font-weight:600}
+.other:hover{text-decoration:underline}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.bar label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.9rem;min-width:150px}
+input[type=search]{min-width:220px}
+button.reset{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;align-self:flex-end}
+.stats{font-size:.85rem;color:var(--muted);margin-left:auto;align-self:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);border:1px solid transparent;font-size:.82rem;cursor:pointer;user-select:none}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.card .img{aspect-ratio:4/3;background:#000;cursor:zoom-in;overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .fab{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.card .fab b{color:var(--accent)}
+.card .title{font-weight:600;font-size:1rem;line-height:1.25}
+.card .sub{font-size:.85rem;color:var(--muted)}
+.card .meta{font-size:.8rem;color:var(--muted);margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:1.05rem;color:var(--ink)}
+.price small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
+.num{display:inline-block;background:var(--ink);color:var(--card);border-radius:4px;padding:0 6px;font-weight:700;font-size:.78rem;margin-right:6px}
+.pid{display:inline-block;background:#e9d94a;color:#3a3200;border-radius:4px;padding:0 6px;font-weight:700;font-size:.78rem;margin-right:6px}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px}
+#lb.on{display:flex}
+#lb img{max-width:95vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#lb .cap{color:#fff;font-size:.95rem;text-align:center;max-width:90vw}
+#lb .x{position:absolute;top:14px;right:20px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:3rem;cursor:pointer;padding:0 18px;user-select:none;opacity:.7}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:0}#lb .next{right:0}
+footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
+@media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Divers (figurines, avions, dioramas…) <small id="count"></small><a class="other" href="catalogue.html">1/43</a><a class="other" href="118.html">1/18</a><a class="other" href="143sb.html">Sans boîte</a><a class="other" href="124.html">1/24</a><a class="other" href="camions.html">Camions</a></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
+  <div class="bar">
+    <label>Fabricant
+      <select id="fFab"><option value="">Tous</option></select></label>
+    <label>Marque
+      <select id="fMarque"><option value="">Toutes</option></select></label>
+    <label>Catégorie
+      <select id="fCat"><option value="">Toutes</option></select></label>
+    <label>Échelle
+      <select id="fEch"><option value="">Toutes</option></select></label>
+    <label>Trier par
+      <select id="fSort">
+        <option value="fab">Fabricant / référence</option>
+        <option value="marque">Marque</option>
+        <option value="annee">Année</option>
+        <option value="prix-">Prix décroissant</option>
+        <option value="prix+">Prix croissant</option>
+        <option value="pilote">Pilote</option>
+        <option value="pid">N° post-it</option>
+      </select></label>
+    <label>Recherche
+      <input type="search" id="fQ" placeholder="pilote, modèle, référence…"></label>
+    <button class="reset" id="reset">Réinitialiser</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main><div class="grid" id="grid"></div><div class="empty" id="empty" style="display:none">Aucune voiture ne correspond aux filtres.</div></main>
+<footer>Prix indicatifs en euros, basés sur les ventes récentes (eBay, boutiques spécialisées). Le numéro jaune, quand il existe, est le n° du post-it d'inventaire. Cliquer sur une photo pour l'agrandir.</footer>
+
+<div id="lb"><span class="x">&times;</span><span class="nav prev">&#8249;</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><span class="nav next">&#8250;</span></div>
+
+<script>
+const DATA = [{"photo": "Divers/DIV_001.jpg", "thumb": "DIV_001.jpg", "fab": "Motormax", "ref": "76009", "marque": "", "modele": "Remorque porte-voiture Metal Trailer (Timeless Legends)", "annee": "", "cat": "Remorque", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 20.0, "pmin": 15.0, "pmax": 25.0, "etat": "Boîte d'origine fermée, très bon état apparent", "notes": "Série Timeless Legends Die-Cast Collection, remorque métal noire avec rampes repliables et béquille. Aussi DIV_002 (même boîte photographiée deux fois, probable)", "pid": 0}, {"photo": "Divers/DIV_003.jpg", "thumb": "DIV_003.jpg", "fab": "Motormax", "ref": "76009", "marque": "", "modele": "Remorque porte-voiture Metal Trailer (boîte rouge)", "annee": "", "cat": "Remorque", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 20.0, "pmin": 15.0, "pmax": 25.0, "etat": "Boîte d'origine fermée, bon état apparent", "notes": "Deuxième exemplaire, boîte rouge Die-Cast Collection (édition différente de DIV_001)", "pid": 0}, {"photo": "Divers/DIV_004.jpg", "thumb": "DIV_004.jpg", "fab": "GMP", "ref": "18821", "marque": "", "modele": "Remorque tandem porte-voiture avec porte-roues, grise (Parts Department)", "annee": "", "cat": "Remorque", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 60.0, "pmin": 40.0, "pmax": 90.0, "etat": "Boîte d'origine vitrine fermée, blister intact", "notes": "GMP Parts Department 1:18 scale trailer Part No.18821, 1 die-cast metal trailer, Adult Collectible. Cote plus élevée que Motormax (GMP/ACME)", "pid": 0}, {"photo": "Divers/DIV_005.jpg", "thumb": "DIV_005.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 11 avions militaires sous blister (Mirage, Meteor, F-84, F-15, Stuka, MiG-15, Spitfire, F-16, Corsair, Hurricane…) + classeur", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 75.0, "pmin": 55.0, "pmax": 110.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, classeur bleu Editions Fabbri", "notes": "11 pièces, collection Avions et Hélicoptères Militaires (Fabbri, die-cast Italeri, 2001-2003), classeur reliure inclus. Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_006.jpg", "thumb": "DIV_006.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 10 avions et hélicoptères militaires sous blister (Mirage, hélicoptère, Rafale, Harrier, Alouette, F9F Panther, Sabre, MiG-15, A-7…) + classeur", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 65.0, "pmin": 50.0, "pmax": 100.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, classeur bleu Editions Fabbri", "notes": "10 pièces, collection Avions et Hélicoptères Militaires Fabbri/Italeri, classeur inclus. Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_007.jpg", "thumb": "DIV_007.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 9 avions et hélicoptères militaires sous blister (Skyhawk, A-10, hélicoptère, F-14 Tomcat, Me 262, Stuka, Ju 88, Jaguar…) + classeur", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 60.0, "pmin": 45.0, "pmax": 90.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, classeur bleu Editions Fabbri", "notes": "9 pièces, collection Avions et Hélicoptères Militaires Fabbri/Italeri, classeur inclus. Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_008.jpg", "thumb": "DIV_008.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 9 avions et hélicoptères militaires sous blister (F-15, Mirage F1, F-117 Nighthawk, MiG-29, Stuka, P-51 Mustang USAF, Hurricane, hélicoptère…) + 2 classeurs", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 60.0, "pmin": 45.0, "pmax": 90.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, 2 classeurs bleus Editions Fabbri", "notes": "9 pièces, collection Avions et Hélicoptères Militaires Fabbri/Italeri. Aussi DIV_009 (mêmes blisters rephotographiés avec les 2 classeurs). Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_010.jpg", "thumb": "DIV_010.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 10 avions militaires sous blister (F-15 Israël, F-86 Sabre, Skyraider, Mirage 2000, A-7 Corsair II, Stuka, Hurricane, F4U Corsair, Jaguar…) + 2 classeurs", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 70.0, "pmin": 50.0, "pmax": 100.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, 2 classeurs bleus Editions Fabbri", "notes": "10 pièces, collection Avions et Hélicoptères Militaires Fabbri/Italeri, 2 classeurs inclus. Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_011.jpg", "thumb": "DIV_011.jpg", "fab": "Fabbri / Italeri", "ref": "", "marque": "Divers", "modele": "Lot de 13 avions et hélicoptères militaires sous blister (hélicoptère, F-16, Sabre, Stuka, Zero, Tornado, Buccaneer, MiG-29, Skyhawk…) + 2 classeurs", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/100", "prix": 85.0, "pmin": 65.0, "pmax": 130.0, "etat": "Sans boîte, blisters d'origine scellés, très bon état, 2 classeurs bleus Editions Fabbri", "notes": "13 pièces, collection Avions et Hélicoptères Militaires Fabbri/Italeri, 2 classeurs inclus. Identification des appareils (probable)", "pid": 0}, {"photo": "Divers/DIV_012.jpg", "thumb": "DIV_012.jpg", "fab": "Altaya / Fabbri", "ref": "", "marque": "Divers", "modele": "Lot de 4 avions Altaya Avions de combat de la 2e Guerre Mondiale (Spitfire, Bf 109G-10 n°2, P-51D Mustang n°3, Spitfire) + 2 blisters Fabbri (hélicoptère, Jaguar)", "annee": "", "cat": "Avion", "num": "", "pilote": "", "course": "", "echelle": "1/72", "prix": 55.0, "pmin": 40.0, "pmax": 75.0, "etat": "Sans boîte, blisters d'origine scellés avec fascicules, étiquettes prix kiosque 7,95 et 11,95 EUR", "notes": "6 pièces : 4 Altaya 1/72 sous blister avec fascicule (n°2 Messerschmitt Bf 109G-10, n°3 North American P-51D Mustang, 2 Spitfire probable) + 2 Fabbri/Italeri 1/100 (hélicoptère, Jaguar probable)", "pid": 0}, {"photo": "Divers/DIV_013.jpg", "thumb": "DIV_013.jpg", "fab": "Altaya", "ref": "", "marque": "", "modele": "Lot 2 classeurs Soldats de Plomb des Forces d'Elite + 5 supports d'exposition (base expositora) en boîte", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 40.0, "pmin": 25.0, "pmax": 60.0, "etat": "Boîte d'origine, 4 supports sous film neuf, 1 support ouvert, 2 classeurs de fascicules", "notes": "7 pièces : 2 classeurs reliure rouge et 5 boîtes cartonnées « Base expositora / Support d'exposition » pour la collection de figurines Altaya (voir DIV_014 à DIV_016)", "pid": 0}, {"photo": "Divers/DIV_014.jpg", "thumb": "DIV_014.jpg", "fab": "Altaya", "ref": "", "marque": "Forces d'élite", "modele": "Lot de 14 figurines soldats de plomb Forces d'Elite sous blister", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 50.0, "pmin": 35.0, "pmax": 70.0, "etat": "Sans boîte, blisters rouges d'origine fermés, certificats présents", "notes": "14 pièces : soldats modernes (SAS, Marines, GIGN, Spetsnaz, snipers...) blisters Altaya « Soldats de plomb des forces d'élite », env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_015.jpg", "thumb": "DIV_015.jpg", "fab": "Altaya", "ref": "", "marque": "Forces d'élite", "modele": "Lot de 13 figurines soldats de plomb Forces d'Elite sous blister", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 45.0, "pmin": 35.0, "pmax": 65.0, "etat": "Sans boîte, blisters rouges d'origine fermés, certificats présents", "notes": "13 pièces : soldats modernes (commandos, snipers en tenue ghillie, tireurs) blisters Altaya, env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_016.jpg", "thumb": "DIV_016.jpg", "fab": "Altaya / Del Prado", "ref": "", "marque": "", "modele": "Lot de 27 figurines de plomb sous blister (soldats Forces d'Elite Altaya et pompiers/policiers Del Prado)", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 95.0, "pmin": 70.0, "pmax": 130.0, "etat": "Sans boîte, blisters rouges d'origine fermés, certificats présents", "notes": "27 pièces (3 rangées de 9) : env. 18 soldats Altaya forces d'élite + env. 9 Del Prado (pompiers, policier Sheriff avec bouclier, tenue NRBC jaune, sapeur ancien) env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_017.jpg", "thumb": "DIV_017.jpg", "fab": "Del Prado", "ref": "", "marque": "", "modele": "Lot de 15 figurines de plomb sous blister (pompiers, soldats, policiers)", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 55.0, "pmin": 40.0, "pmax": 75.0, "etat": "Sans boîte, blisters rouges d'origine fermés, dans un carton", "notes": "15 pièces (3 rangées de 5) : collection Del Prado « Pompiers du monde » et « Soldats des forces spéciales », réf. type BOM0xx lisibles au dos, env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_018.jpg", "thumb": "DIV_018.jpg", "fab": "Del Prado", "ref": "", "marque": "", "modele": "Lot de 21 figurines de plomb Pompiers du Monde sous blister + accessoires", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 75.0, "pmin": 55.0, "pmax": 105.0, "etat": "Sans boîte, blisters rouges d'origine fermés, certificats présents", "notes": "21 pièces : pompiers de différents pays et époques (casques, drapeau, chien) + 3 blisters d'accessoires (roues, lanterne, hache/pompe), © Ediciones del Prado 2003, env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_019.jpg", "thumb": "DIV_019.jpg", "fab": "Del Prado / Inconnu", "ref": "", "marque": "", "modele": "Lot de 9 figurines de plomb sous blister (6 pompiers/soldats Del Prado + 3 soldats blister jaune)", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 30.0, "pmin": 20.0, "pmax": 45.0, "etat": "Sans boîte, blisters d'origine fermés, blisters jaunes sans carton imprimé", "notes": "9 pièces : 6 Del Prado (pompiers, scaphandre ancien, soldat) + 3 blisters jaunes sans marque (probable Altaya/Del Prado : poilu bleu horizon 1914, aviateur WW2, casque bleu ONU), env. 7 cm", "pid": 0}, {"photo": "Divers/DIV_020.jpg", "thumb": "DIV_020.jpg", "fab": "GMP", "ref": "G1800148", "marque": "GM Performance Parts", "modele": "Tool and Trailer Set (remorque porte-voiture + outillage d'atelier)", "annee": "", "cat": "Remorque", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 60.0, "pmin": 40.0, "pmax": 90.0, "etat": "Boîte d'origine fermée, vitrine intacte, remorque et 15 accessoires en blister", "notes": "GMP 1:18 Tool and Trailer Set part no. G1800148, décor GM Performance Parts, remorque à essieu simple + outils (cric, bidons, coffres)", "pid": 0}, {"photo": "Divers/DIV_022.jpg", "thumb": "DIV_022.jpg", "fab": "Ixo (Altaya)", "ref": "", "marque": "Audi", "modele": "Collection « Je monte mon stand » 24 Heures du Mans, stand Audi R8, env. 25 blisters (murs, sols, panneaux, mécaniciens, pilotes, 2 Audi R8)", "annee": "2000-2002", "cat": "Diorama / accessoires", "num": "", "pilote": "", "course": "24 Heures du Mans", "echelle": "1/43", "prix": 100.0, "pmin": 70.0, "pmax": 150.0, "etat": "Sans boîte, blisters d'origine fermés, complets, dans un carton marqué à la main « Je monte mon stand »", "notes": "Lot réparti sur 3 photos : aussi DIV_021 (4 grandes plaques de base + blisters panneaux AUDI 1 / AUDI 2 + pilotes) et DIV_023 (blister AUDI 3, murs, Audi R8 jaune n°2 probable Le Mans 2001-2002, pilotes). Env. 25 blisters : éléments de stand, mécaniciens, pilotes, pneus, outillage, Audi R8 rouge n°1 (probable) et jaune n°2. Collection complète = 30 fascicules + 1 voiture", "pid": 0}, {"photo": "Divers/DIV_024.jpg", "thumb": "DIV_024.jpg", "fab": "Frontline Figures", "ref": "", "marque": "Royaume-Uni", "modele": "Coffret 4 soldats de plomb Highlanders écossais en tirant (kilt, bonnet à plumes)", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "54 mm", "prix": 60.0, "pmin": 40.0, "pmax": 90.0, "etat": "Boîte d'origine verte type écrin avec mousse et fourreau blanc Frontline Figures", "notes": "4 figurines peintes main, infanterie écossaise (Black Watch/Gordon Highlanders, probable), même photo que le coffret bleu (ligne suivante)", "pid": 0}, {"photo": "Divers/DIV_024.jpg", "thumb": "DIV_024.jpg", "fab": "Frontline Figures", "ref": "", "marque": "France", "modele": "Coffret cavalerie napoléonienne : cuirassier + hussard à pied avec 2 chevaux", "annee": "", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "54 mm", "prix": 60.0, "pmin": 40.0, "pmax": 90.0, "etat": "Boîte d'origine bleue type écrin avec mousse et fourreau blanc Frontline Figures", "notes": "4 pièces (2 cavaliers démontés + 2 chevaux sellés), France Ier Empire (probable), même photo que le coffret vert", "pid": 0}, {"photo": "Divers/DIV_025.jpg", "thumb": "DIV_025.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Coffret La Grande Armée napoléonienne Austerlitz 1805 : canon de Gribeauval de 12 avec avant-train et figurines", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine coffret vert à 2 plateaux, très bon état, pièces calées dans leurs alvéoles", "notes": "Figurines étain/zamac d'après modèles MHSP. Plateau supérieur visible : canon de 12 et avant-train, 7 figurines (artilleurs, Garde impériale, fusiliers, maréchal-ferrant). Plateau inférieur non visible : Napoléon, 2 conducteurs, 6 chevaux (19 pièces annoncées, complétude à vérifier)", "pid": 0}, {"photo": "Divers/DIV_026.jpg", "thumb": "DIV_026.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Coffret La Grande Armée napoléonienne Austerlitz 1805 : la cuisine roulante de l'Empereur et figurines", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine coffret vert à 2 plateaux, très bon état", "notes": "Plateau supérieur visible : cuisine roulante (support, châssis, marmites), 11 figurines (grenadiers, fusiliers, cantinière, officier, chirurgiens, Constant valet de l'Empereur, page). Plateau inférieur : mulet, chevaux (25 pièces annoncées, complétude à vérifier)", "pid": 0}, {"photo": "Divers/DIV_027.jpg", "thumb": "DIV_027.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Coffret La Grande Armée napoléonienne Austerlitz 1805 : le Würst (ambulance) avec avant-train et figurines", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine coffret vert à 2 plateaux, très bon état", "notes": "Plateau supérieur visible : Würst et avant-train, 7 figurines (Napoléon en tenue de colonel des chasseurs de la Garde, officiers, artilleurs, conducteurs). Plateau inférieur : table de campagne, fauteuil, chevaux (19 pièces annoncées, complétude à vérifier)", "pid": 0}, {"photo": "Divers/DIV_028.jpg", "thumb": "DIV_028.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Coffret La Grande Armée napoléonienne Austerlitz 1805 : maison de l'Empereur (coffre à vaisselle, vaisselle, tonneau) et figurines", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine coffret vert à 2 plateaux, très bon état", "notes": "Plateau supérieur visible : 10 figurines (laquais, valet de chambre, artilleurs Garde impériale, tambour, pharmacien, officier, Napoléon), coffre à vaisselle, vaisselle. Plateau inférieur : chevaux d'attelage (22 pièces annoncées, complétude à vérifier)", "pid": 0}, {"photo": "Divers/DIV_029.jpg", "thumb": "DIV_029.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Coffret La Grande Armée napoléonienne Austerlitz 1805 : drapeaux et porte-drapeaux de la Garde et de l'infanterie de ligne", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine coffret vert à 2 plateaux, très bon état", "notes": "Plateau supérieur visible : 9 figurines (grenadiers à cheval, officiers, Napoléon, généraux, Mamelouk, hussard) et 5 drapeaux avec hampes. Plateau inférieur : dragon, mamelouks, chevaux, tambour (25 pièces annoncées, complétude à vérifier)", "pid": 0}, {"photo": "Divers/DIV_030.jpg", "thumb": "DIV_030.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Empire)", "modele": "Plaque Napoléon et ses maréchaux, 20 médailles en métal doré (Napoléon et 19 maréchaux : Ney, Lannes, Berthier, Bessières, Murat, Victor, Soult, Davout, Kellermann...)", "annee": "", "cat": "Médailles", "num": "", "pilote": "", "course": "", "echelle": "", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Sans boîte, plaque cartonnée verte sous pochette plastique, médailles complètes, bon état", "notes": "Complément de la collection Atlas Grande Armée napoléonienne. Sur la même photo : 3 coffrets Atlas emballés sous film à bulles, probablement parmi ceux des photos DIV_025 à DIV_029 (non ouverts, non comptés)", "pid": 0}, {"photo": "Divers/DIV_031.jpg", "thumb": "DIV_031.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Lot de 4 boîtes La Grande Armée napoléonienne Austerlitz 1805 : 2 canons de Gribeauval, le Würst, pièce d'artillerie", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîtes d'origine individuelles vert/jaune avec calage polystyrène et certificats d'authenticité, état neuf", "notes": "4 pièces en zamac d'après modèles MHSP. Cote unitaire environ 15–25 €", "pid": 0}, {"photo": "Divers/DIV_032.jpg", "thumb": "DIV_032.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Lot de 3 boîtes La Grande Armée napoléonienne : avant-train du canon de Gribeauval de 12 avec cheval d'attelage d'artillerie, fourgon de service de l'Empereur, fourgon de la cantinière", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 45.0, "pmin": 30.0, "pmax": 60.0, "etat": "Boîtes d'origine individuelles avec calage polystyrène et notice de montage, état neuf", "notes": "3 pièces en zamac d'après modèles MHSP. Cote unitaire environ 15–20 €", "pid": 0}, {"photo": "Divers/DIV_033.jpg", "thumb": "DIV_033.jpg", "fab": "Editions Atlas", "ref": "", "marque": "France (Grande Armée)", "modele": "Lot de 2 boîtes La Grande Armée napoléonienne (cuisine roulante de l'Empereur, forge de campagne) et 2 figurines en vrac (Mamelouk avec drapeau) avec liasse de certificats d'authenticité", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 40.0, "pmin": 25.0, "pmax": 55.0, "etat": "Boîtes d'origine pour les 2 véhicules, 2 figurines sans boîte dans un carton, état neuf", "notes": "Certificats visibles : cheval de mamelouk, drapeau rose porté par le mamelouk, et une dizaine d'autres. Fabricant probable pour l'ensemble : Editions Atlas", "pid": 0}, {"photo": "Divers/DIV_034.jpg", "thumb": "DIV_034.jpg", "fab": "Editions Atlas", "ref": "611 726 001", "marque": "France (Empire)", "modele": "Napoléon à cheval en étain (cavalier et cheval séparés)", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/30", "prix": 25.0, "pmin": 15.0, "pmax": 35.0, "etat": "Boîte d'origine carton blanc annotée Napoléon au feutre, pièces neuves sous liens", "notes": "Collection La Grande Armée napoléonienne (probable). Même photo que les 2 lignes suivantes", "pid": 0}, {"photo": "Divers/DIV_034.jpg", "thumb": "DIV_034.jpg", "fab": "Del Prado", "ref": "", "marque": "France (Empire)", "modele": "Napoléon Ier en redingote grise, figurine peinte", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 8.0, "pmin": 5.0, "pmax": 12.0, "etat": "Boîte d'origine blister bleu, neuf", "notes": "Fabricant Del Prado (probable, présentation type blister bleu). Même photo que ligne précédente et suivante", "pid": 0}, {"photo": "Divers/DIV_034.jpg", "thumb": "DIV_034.jpg", "fab": "Inconnu", "ref": "", "marque": "France (Empire)", "modele": "Napoléon à cheval, figurine peinte sur socle bois", "annee": "1805", "cat": "Figurine", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 25.0, "pmin": 15.0, "pmax": 35.0, "etat": "Sans boîte, sous sachet plastique, calage polystyrène, bon état", "notes": "Fabricant Atlas ou Del Prado (probable), échelle estimée. Même photo que les 2 lignes précédentes", "pid": 0}, {"photo": "Divers/DIV_035.jpg", "thumb": "DIV_035.jpg", "fab": "Forces of Valor", "ref": "", "marque": "Allemagne", "modele": "Jagdpanther Sd.Kfz. 173, Belgique 1944, avec figurine", "annee": "1944", "cat": "Char", "num": "01", "pilote": "", "course": "", "echelle": "1/32", "prix": 60.0, "pmin": 45.0, "pmax": 80.0, "etat": "Boîte d'origine vitrine Forces of Valor / Solido, neuf sous emballage avec liens", "notes": "Édition distribuée par Solido, métal et plastique, camouflage 3 tons, figurine de tankiste incluse", "pid": 0}];
+const DEFAULT_SORT = 'fab';
+const SHOW_ETAT = '1' === '1';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniq = k => [...new Set(DATA.map(d => d[k]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}));
+const fill = (sel, vals) => vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+fill($('#fFab'), uniq('fab')); fill($('#fMarque'), uniq('marque')); fill($('#fCat'), uniq('cat')); fill($('#fEch'), uniq('echelle'));
+if (!DATA.some(d=>d.pid)) document.querySelector('#fSort option[value="pid"]').remove();
+$('#fSort').value = DEFAULT_SORT;
+
+// chips fabricant (raccourci)
+const chips = $('#chips');
+const countBy = {}; DATA.forEach(d => countBy[d.fab]=(countBy[d.fab]||0)+1);
+uniq('fab').forEach(f => { const c=document.createElement('span'); c.className='chip'; c.dataset.v=f; c.textContent=`${f} (${countBy[f]})`; c.onclick=()=>{ $('#fFab').value = ($('#fFab').value===f?'':f); render(); }; chips.appendChild(c); });
+
+let view = [];
+function render(){
+  const fab=$('#fFab').value, marque=$('#fMarque').value, cat=$('#fCat').value, ech=$('#fEch').value, q=$('#fQ').value.trim().toLowerCase(), sort=$('#fSort').value;
+  view = DATA.filter(d => (!fab||d.fab===fab) && (!marque||d.marque===marque) && (!cat||d.cat===cat) && (!ech||d.echelle===ech) &&
+    (!q || [d.fab,d.ref,d.marque,d.modele,d.pilote,d.course,d.annee,d.num,d.notes,d.pid?'post-it '+d.pid:''].join(' ').toLowerCase().includes(q)));
+  const cmp = {
+    'fab': (a,b)=> a.fab.localeCompare(b.fab)|| a.ref.localeCompare(b.ref,undefined,{numeric:true}),
+    'marque': (a,b)=> a.marque.localeCompare(b.marque)|| a.annee.localeCompare(b.annee),
+    'annee': (a,b)=> a.annee.localeCompare(b.annee)|| a.marque.localeCompare(b.marque),
+    'prix-': (a,b)=> b.prix-a.prix, 'prix+': (a,b)=> a.prix-b.prix,
+    'pilote': (a,b)=> a.pilote.localeCompare(b.pilote),
+    'pid': (a,b)=> (a.pid||9999)-(b.pid||9999),
+  }[sort]; view.sort(cmp);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v===fab));
+  $('#grid').innerHTML = view.map((d,i) => `
+    <article class="card">
+      <div class="img" data-i="${i}"><img loading="lazy" src="thumbs/${esc(d.thumb)}" alt="${esc(d.marque+' '+d.modele)}"></div>
+      <div class="body">
+        <div class="fab"><b>${esc(d.fab)}</b>${d.ref?' · réf. '+esc(d.ref):''} · ${esc(d.echelle)}</div>
+        <div class="title">${d.pid?`<span class="pid" title="N° post-it">${d.pid}</span>`:''}${d.num?`<span class="num">${esc(d.num)}</span>`:''}${esc(d.marque)} ${esc(d.modele)}</div>
+        <div class="sub">${esc(d.pilote)}${d.pilote&&d.course?' — ':''}${esc(d.course)}</div>
+        ${SHOW_ETAT&&d.etat?`<div class="sub">${esc(d.etat)}</div>`:''}
+        ${d.notes?`<div class="sub"><i>${esc(d.notes)}</i></div>`:''}
+        <div class="meta"><span>${esc(d.cat)} · ${esc(d.annee)}</span>
+          <span class="price">${d.prix?d.prix.toFixed(0)+' €':'—'}${d.pmin&&d.pmax?`<small>(${d.pmin.toFixed(0)}–${d.pmax.toFixed(0)})</small>`:''}</span></div>
+      </div>
+    </article>`).join('');
+  $('#empty').style.display = view.length?'none':'block';
+  const total = view.reduce((s,d)=>s+d.prix,0);
+  $('#count').textContent = `${DATA.length} modèles`;
+  $('#stats').textContent = `${view.length} affiché${view.length>1?'s':''} · total estimé ${total.toFixed(0)} €`;
+}
+['fFab','fMarque','fCat','fEch','fSort'].forEach(id => $('#'+id).onchange = render);
+$('#fQ').oninput = render;
+$('#reset').onclick = () => { ['fFab','fMarque','fCat','fEch','fQ'].forEach(id=>$('#'+id).value=''); $('#fSort').value=DEFAULT_SORT; render(); };
+
+// lightbox
+let cur=0;
+function show(i){ cur=(i+view.length)%view.length; const d=view[cur];
+  $('#lbImg').src = 'medium/'+d.thumb; $('#lbCap').textContent = `${d.fab} ${d.ref} — ${d.marque} ${d.modele} · ${d.pilote} · ${d.prix.toFixed(0)} €`; $('#lb').classList.add('on'); }
+$('#grid').addEventListener('click', e => { const t=e.target.closest('.img'); if(t) show(+t.dataset.i); });
+$('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
+$('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
+$('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
+document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camions et transporteurs</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#c8102e;--chip:#ececea}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--chip:#2c2c2c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:.3px}
+h1 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+.other{font-size:.85rem;margin-left:14px;color:var(--accent);text-decoration:none;font-weight:600}
+.other:hover{text-decoration:underline}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.bar label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.9rem;min-width:150px}
+input[type=search]{min-width:220px}
+button.reset{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;align-self:flex-end}
+.stats{font-size:.85rem;color:var(--muted);margin-left:auto;align-self:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);border:1px solid transparent;font-size:.82rem;cursor:pointer;user-select:none}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.card .img{aspect-ratio:4/3;background:#000;cursor:zoom-in;overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .fab{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.card .fab b{color:var(--accent)}
+.card .title{font-weight:600;font-size:1rem;line-height:1.25}
+.card .sub{font-size:.85rem;color:var(--muted)}
+.card .meta{font-size:.8rem;color:var(--muted);margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:1.05rem;color:var(--ink)}
+.price small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
+.num{display:inline-block;background:var(--ink);color:var(--card);border-radius:4px;padding:0 6px;font-weight:700;font-size:.78rem;margin-right:6px}
+.pid{display:inline-block;background:#e9d94a;color:#3a3200;border-radius:4px;padding:0 6px;font-weight:700;font-size:.78rem;margin-right:6px}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px}
+#lb.on{display:flex}
+#lb img{max-width:95vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#lb .cap{color:#fff;font-size:.95rem;text-align:center;max-width:90vw}
+#lb .x{position:absolute;top:14px;right:20px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:3rem;cursor:pointer;padding:0 18px;user-select:none;opacity:.7}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:0}#lb .next{right:0}
+footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
+@media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Camions et transporteurs <small id="count"></small><a class="other" href="catalogue.html">1/43</a><a class="other" href="118.html">1/18</a><a class="other" href="143sb.html">Sans boîte</a><a class="other" href="124.html">1/24</a><a class="other" href="divers.html">Divers</a></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
+  <div class="bar">
+    <label>Fabricant
+      <select id="fFab"><option value="">Tous</option></select></label>
+    <label>Marque
+      <select id="fMarque"><option value="">Toutes</option></select></label>
+    <label>Catégorie
+      <select id="fCat"><option value="">Toutes</option></select></label>
+    <label>Échelle
+      <select id="fEch"><option value="">Toutes</option></select></label>
+    <label>Trier par
+      <select id="fSort">
+        <option value="fab">Fabricant / référence</option>
+        <option value="marque">Marque</option>
+        <option value="annee">Année</option>
+        <option value="prix-">Prix décroissant</option>
+        <option value="prix+">Prix croissant</option>
+        <option value="pilote">Pilote</option>
+        <option value="pid">N° post-it</option>
+      </select></label>
+    <label>Recherche
+      <input type="search" id="fQ" placeholder="pilote, modèle, référence…"></label>
+    <button class="reset" id="reset">Réinitialiser</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main><div class="grid" id="grid"></div><div class="empty" id="empty" style="display:none">Aucune voiture ne correspond aux filtres.</div></main>
+<footer>Prix indicatifs en euros, basés sur les ventes récentes (eBay, boutiques spécialisées). Le numéro jaune, quand il existe, est le n° du post-it d'inventaire. Cliquer sur une photo pour l'agrandir.</footer>
+
+<div id="lb"><span class="x">&times;</span><span class="nav prev">&#8249;</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><span class="nav next">&#8250;</span></div>
+
+<script>
+const DATA = [{"photo": "Camions/CAM_001.jpg", "thumb": "CAM_001.jpg", "fab": "New Ray", "ref": "12033", "marque": "Peterbilt", "modele": "Model 379 semi-remorque fourgon chromé", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, bon état", "notes": "Tracteur rouge bordeaux avec bandes bleues/blanches, remorque frigo chromée logo Peterbilt", "pid": 0}, {"photo": "Camions/CAM_002.jpg", "thumb": "CAM_002.jpg", "fab": "New Ray", "ref": "11803", "marque": "MAN", "modele": "19.603 FLS camion toupie bétonnière", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, bon état", "notes": "Cabine bleu nuit, toupie chromée logo MAN", "pid": 0}, {"photo": "Camions/CAM_003.jpg", "thumb": "CAM_003.jpg", "fab": "Eligor", "ref": "", "marque": "Renault", "modele": "Magnum transporteur Williams Renault F1", "annee": "1994", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Formule 1 1994-1995 (probable)", "echelle": "1/43", "prix": 55.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine carton blanc avec calage mousse, sachet d'accessoires non monté, bon état", "notes": "Fabricant Eligor (probable, boîte blanche typique). Sponsors elf, Segafredo, Sanyo, Renault Sport F1, Goodyear, Ray-Ban, DuPont, OZ Wheels. Echelle estimée 1/43", "pid": 0}, {"photo": "Camions/CAM_004.jpg", "thumb": "CAM_004.jpg", "fab": "Old Cars", "ref": "", "marque": "Iveco", "modele": "EuroStar transporteur Scuderia Ferrari", "annee": "1996", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Formule 1 saison 1996-1997 (probable)", "echelle": "1/43", "prix": 80.0, "pmin": 60.0, "pmax": 120.0, "etat": "Boîte d'origine carton Sport avec calage mousse, sachet d'accessoires non monté, bon état", "notes": "Old Cars (probable, boîte Sport à drapeaux à damier). Sponsors Asprey, Shell, Goodyear, Pioneer, Telecom Italia, Magneti Marelli, SKF, Brembo, TRW Sabelt, BBS. Cote vue en ligne 65-190 EUR", "pid": 0}, {"photo": "Camions/CAM_005.jpg", "thumb": "CAM_005.jpg", "fab": "New Ray", "ref": "11933", "marque": "Kenworth", "modele": "W900 semi-remorque fourgon chromé", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, étiquette de prix sur la boîte, bon état", "notes": "Tracteur noir avec filets dorés, remorque frigo chromée logo Kenworth. Aussi CAM_010 (même objet, même étiquette)", "pid": 0}, {"photo": "Camions/CAM_006.jpg", "thumb": "CAM_006.jpg", "fab": "New Ray", "ref": "", "marque": "Freightliner", "modele": "Century Class semi-remorque fourgon décor faune (élan, ours, bisons)", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine New Ray, blister fermé, bon état", "notes": "Tracteur bleu, remorque 3 essieux décorée paysage animalier nord-américain, portes ouvrantes", "pid": 0}, {"photo": "Camions/CAM_007.jpg", "thumb": "CAM_007.jpg", "fab": "New Ray", "ref": "12003", "marque": "Peterbilt", "modele": "Model 379 porte-voitures", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, bon état", "notes": "Cabine rouge, plateau porte-voitures chromé à rampes hydrauliques", "pid": 0}, {"photo": "Camions/CAM_008.jpg", "thumb": "CAM_008.jpg", "fab": "Inconnu", "ref": "", "marque": "Scania", "modele": "4-series transporteur Jordan Peugeot F1", "annee": "1997", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Formule 1 saison 1997", "echelle": "1/43", "prix": 60.0, "pmin": 40.0, "pmax": 80.0, "etat": "Boîte d'origine carton blanc avec calage mousse, sachet d'accessoires non monté, bon état", "notes": "Fabricant non visible, Old Cars ou Eligor (probable). Livrée jaune au serpent (Jordan 197), sponsors Total, Peugeot F1, Goodyear, Lafert, Hewlett Packard... Cabine identifiée Scania (probable). Echelle estimée 1/43", "pid": 0}, {"photo": "Camions/CAM_009.jpg", "thumb": "CAM_009.jpg", "fab": "New Ray", "ref": "11503", "marque": "Renault", "modele": "AE500 Magnum camion plateau bâché Renault", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, bon état", "notes": "Camion porteur gris argent, bâche grise logo Renault", "pid": 0}, {"photo": "Camions/CAM_011.jpg", "thumb": "CAM_011.jpg", "fab": "New Ray", "ref": "", "marque": "Peterbilt", "modele": "Model 379 semi-remorque plateau grumier avec grue", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine New Ray, blister fermé, bon état", "notes": "Tracteur rouge avec grue de chargement, remorque plateau à montants chromés, portes ouvrantes", "pid": 0}, {"photo": "Camions/CAM_012.jpg", "thumb": "CAM_012.jpg", "fab": "New Ray", "ref": "11731", "marque": "Scania", "modele": "R124/400 semi-remorque porte-conteneur", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, étiquette de prix sur la boîte, bon état", "notes": "Tracteur bleu nuit à filets or, conteneur chromé logo Scania", "pid": 0}, {"photo": "Camions/CAM_013.jpg", "thumb": "CAM_013.jpg", "fab": "New Ray", "ref": "", "marque": "Renault", "modele": "AE500 Magnum porte-engins avec pelleteuse 325L et grue", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine Construction series jaune (marquage Joubi), blister fermé, bon état", "notes": "Ensemble orange : tracteur Magnum, remorque surbaissée, pelle sur chenilles 325L et grue à flèche treillis. Echelle 1/32 sur la boîte", "pid": 0}, {"photo": "Camions/CAM_014.jpg", "thumb": "CAM_014.jpg", "fab": "New Ray", "ref": "11903", "marque": "Kenworth", "modele": "W900 camion benne", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, bon état", "notes": "Cabine noire, benne basculante chromée", "pid": 0}, {"photo": "Camions/CAM_015.jpg", "thumb": "CAM_015.jpg", "fab": "New Ray", "ref": "12023", "marque": "Peterbilt", "modele": "Model 379 semi-remorque citerne Shell", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine LongHauler Collection, blister fermé, étiquette de prix sur la boîte, papier de calage visible, bon état", "notes": "Tracteur gris décor aigle et drapeau américain, citerne chromée Shell", "pid": 0}, {"photo": "Camions/CAM_016.jpg", "thumb": "CAM_016.jpg", "fab": "New Ray", "ref": "12023", "marque": "Peterbilt", "modele": "Model 379 semi-remorque citerne Shell", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine Long Hauler Collection, blister intact, modèle complet", "notes": "Série Long Hauler Collection, citerne chromée Shell, cabine grise avec aigle et drapeau US", "pid": 0}, {"photo": "Camions/CAM_017.jpg", "thumb": "CAM_017.jpg", "fab": "New Ray", "ref": "52823", "marque": "MAN", "modele": "19.603 FLS tracteur seul", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 20.0, "pmin": 15.0, "pmax": 30.0, "etat": "Boîte d'origine Long Hauler Collection, étiquette prix ancienne sur la vitrine, boîte un peu marquée", "notes": "Tracteur solo bleu et argent, échelle estimée (non lue sur la boîte, série Long Hauler 1/32)", "pid": 0}, {"photo": "Camions/CAM_018.jpg", "thumb": "CAM_018.jpg", "fab": "CMR", "ref": "CMR139", "marque": "Citroën", "modele": "DS Tissier plateau porte-auto", "annee": "1970", "cat": "Utilitaire", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 80.0, "pmin": 60.0, "pmax": 100.0, "etat": "Boîte d'origine avec calage mousse, boîte extérieure légèrement abîmée aux angles, modèle en excellent état apparent", "notes": "Classic Model Replicars, version rouge (CMR139), roue de secours sur le plateau, gyrophares", "pid": 0}, {"photo": "Camions/CAM_019.jpg", "thumb": "CAM_019.jpg", "fab": "CMR", "ref": "CMR154", "marque": "Mercedes-Benz", "modele": "O317 Renntransporter Martini Racing Porsche", "annee": "1971", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Martini Racing Porsche", "echelle": "1/18", "prix": 250.0, "pmin": 200.0, "pmax": 300.0, "etat": "Boîte d'origine noire CMR avec calages mousse, modèle apparemment complet et neuf", "notes": "Transporteur 3 voitures Martini Porsche, référence CMR154 (probable), prix neuf environ 300 EUR, longueur 62 cm", "pid": 0}, {"photo": "Camions/CAM_020.jpg", "thumb": "CAM_020.jpg", "fab": "Ixo", "ref": "18RMC033XE", "marque": "Ford", "modele": "Transit MkII assistance Rothmans Rally Team David Sutton Motor Sport", "annee": "1979", "cat": "Utilitaire", "num": "", "pilote": "", "course": "Rallye WRC 1979-1981", "echelle": "1/18", "prix": 70.0, "pmin": 55.0, "pmax": 90.0, "etat": "Boîte d'origine sous film plastique, jamais ouverte", "notes": "Ixo Models, galerie de toit avec roues de rechange, référence probable 18RMC033XE", "pid": 0}, {"photo": "Camions/CAM_021.jpg", "thumb": "CAM_021.jpg", "fab": "Inconnu", "ref": "", "marque": "?", "modele": "Camion grumier Freight Train (jouet à friction)", "annee": "", "cat": "Jouet", "num": "", "pilote": "", "course": "", "echelle": "1/48", "prix": 7.0, "pmin": 5.0, "pmax": 10.0, "etat": "Boîte d'origine Power Auto Series à vitrine, boîte usée, étiquette arrachée", "notes": "Jouet plastique chinois Friction Powered Vehicle, cabine verte marquée Notos, échelle estimée, fabricant non indiqué", "pid": 0}, {"photo": "Camions/CAM_022.jpg", "thumb": "CAM_022.jpg", "fab": "Inconnu", "ref": "", "marque": "?", "modele": "Camion plateau transport de tonneaux Freight Train (jouet à friction)", "annee": "", "cat": "Jouet", "num": "", "pilote": "", "course": "", "echelle": "1/48", "prix": 7.0, "pmin": 5.0, "pmax": 10.0, "etat": "Boîte d'origine Power Auto Series à vitrine, boîte usée, étiquette arrachée, modèle sous sachet", "notes": "Jouet plastique chinois Friction Powered Vehicle, cabine vert clair marquée King, échelle estimée, même série que CAM_021", "pid": 0}, {"photo": "Camions/CAM_023.jpg", "thumb": "CAM_023.jpg", "fab": "New Ray", "ref": "", "marque": "Kenworth", "modele": "W900 semi-remorque benne céréalière", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine, blister enfoncé et boîte usée aux angles", "notes": "Tracteur rouge et benne grise, fabricant New Ray (probable, style de boîte), échelle estimée", "pid": 0}, {"photo": "Camions/CAM_024.jpg", "thumb": "CAM_024.jpg", "fab": "Welly", "ref": "", "marque": "Peterbilt", "modele": "379 semi-remorque citerne noire aigle", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 20.0, "pmax": 40.0, "etat": "Boîte d'origine à vitrine, boîte légèrement marquée", "notes": "Citerne argent avec aigle et bandes bleu blanc rouge, échelle 1/32 lue sur la boîte", "pid": 0}, {"photo": "Camions/CAM_025.jpg", "thumb": "CAM_025.jpg", "fab": "New Ray", "ref": "", "marque": "Renault", "modele": "Magnum transporteur Renault Sport F1", "annee": "2016", "cat": "Transporteur course", "num": "", "pilote": "", "course": "F1 Renault Sport Formula One Team", "echelle": "1/43", "prix": 20.0, "pmin": 15.0, "pmax": 30.0, "etat": "Boîte d'origine à vitrine, blister intact", "notes": "Livrée blanc, orange, noir avec damier, sponsor Total, échelle 1/43 lue sur la boîte", "pid": 0}, {"photo": "Camions/CAM_026.jpg", "thumb": "CAM_026.jpg", "fab": "Eligor", "ref": "", "marque": "Renault", "modele": "Magnum transporteur Renault F1 Team", "annee": "2002", "cat": "Transporteur course", "num": "", "pilote": "", "course": "F1 Renault F1 Team", "echelle": "1/43", "prix": 50.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine bleue à vitrine, très bon état", "notes": "Fabricant Eligor (probable, boîte bleue Renault Magnum 1/43 non signée sur la photo), livrée blanc, bleu, jaune Renault F1 Team", "pid": 0}, {"photo": "Camions/CAM_027.jpg", "thumb": "CAM_027.jpg", "fab": "Inconnu", "ref": "", "marque": "Renault", "modele": "Camion citerne Total (plastique)", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/43", "prix": 15.0, "pmin": 10.0, "pmax": 25.0, "etat": "Boîte blanche neutre en carton avec calages, modèle blanc plastique, semble complet", "notes": "Aucune marque visible, camion promotionnel Total (probable), cabine Renault (probable), échelle estimée", "pid": 0}, {"photo": "Camions/CAM_028.jpg", "thumb": "CAM_028.jpg", "fab": "New Ray", "ref": "", "marque": "Kenworth", "modele": "T-2000 semi-remorque America's Legends Winchester Trouble On The Trail", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 40.0, "pmin": 30.0, "pmax": 50.0, "etat": "Boîte d'origine à vitrine, blister intact", "notes": "Série America's Legends, illustration Trouble On The Trail par Trevor Eckhoff, licence Winchester, portes ouvrantes, échelle 1/32 lue sur la boîte", "pid": 0}, {"photo": "Camions/CAM_029.jpg", "thumb": "CAM_029.jpg", "fab": "New Ray", "ref": "", "marque": "Mercedes-Benz", "modele": "Truck 1853 S semi-remorque frigorifique", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 30.0, "pmin": 25.0, "pmax": 40.0, "etat": "Boîte d'origine Long Hauler Collection, étiquette prix jaune sur la vitrine, blister intact", "notes": "Tracteur vert métallisé, remorque argent Mercedes-Benz, échelle estimée (série Long Hauler 1/32)", "pid": 0}, {"photo": "Camions/CAM_030.jpg", "thumb": "CAM_030.jpg", "fab": "New Ray", "ref": "6261", "marque": "Mercedes-Benz", "modele": "Actros 1857 porte-voitures Logistic Auto Express avec 3 voitures", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/32", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine ouverte (fenêtre), camion et remorque porte-voitures en place, 3 voitures (rouge, verte, jaune) incluses", "notes": "Coffret New Ray Car Collection métal et plastique, ref. 6261-AL, camion + remorque à 2 étages", "pid": 0}, {"photo": "Camions/CAM_031.jpg", "thumb": "CAM_031.jpg", "fab": "Ixo", "ref": "", "marque": "Fiat", "modele": "242 fourgon assistance Martini Racing Lancia", "annee": "1983", "cat": "Utilitaire", "num": "", "pilote": "", "course": "Rallye WRC (assistance)", "echelle": "1/43", "prix": 40.0, "pmin": 30.0, "pmax": 50.0, "etat": "Boîte d'origine sous blister non ouvert, galerie de toit chargée (roues, caisse)", "notes": "Livrée Martini Racing, échelle estimée 1/43 (Ixo produit aussi ce fourgon au 1/18 : vérifier la taille de la boîte), référence non visible", "pid": 0}, {"photo": "Camions/CAM_032.jpg", "thumb": "CAM_032.jpg", "fab": "Auto World", "ref": "", "marque": "", "modele": "Four Wheel Enclosed Trailer (remorque fermée blanche)", "annee": "", "cat": "Remorque", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 40.0, "pmin": 30.0, "pmax": 50.0, "etat": "Boîte d'origine fenêtre, remorque sous blister, complète", "notes": "Série American Muscle, die-cast, remorque 2 essieux avec porte latérale", "pid": 0}, {"photo": "Camions/CAM_033.jpg", "thumb": "CAM_033.jpg", "fab": "Otto mobile", "ref": "", "marque": "Saviem", "modele": "SG2 Service Courses Alpine Renault", "annee": "1970", "cat": "Utilitaire", "num": "", "pilote": "", "course": "Rallye (assistance)", "echelle": "1/18", "prix": 100.0, "pmin": 80.0, "pmax": 130.0, "etat": "Boîte d'origine blanche Otto avec calage mousse, fourgon sous sachet, très bon état", "notes": "Résine, série limitée Ottomobile, référence non lue sur la boîte (OT2xx probable)", "pid": 0}, {"photo": "Camions/CAM_034.jpg", "thumb": "CAM_034.jpg", "fab": "Carson", "ref": "", "marque": "Mercedes-Benz", "modele": "Atego camion de course Tiger Racing Team Dehnhardt Esso", "annee": "2003", "cat": "Camion de course", "num": "1", "pilote": "Ludovic Faure", "course": "Championnat d'Europe Camions FIA", "echelle": "1/43", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine vitrine Collectors Line, camion en excellent état", "notes": "Livrée Esso / Essolube XTS / Esso Card avec tigre, Carson Model Sport, échelle estimée 1/43, année estimée", "pid": 0}, {"photo": "Camions/CAM_035.jpg", "thumb": "CAM_035.jpg", "fab": "Premium ClassiXXs", "ref": "PCL30106", "marque": "Mercedes-Benz", "modele": "L 408 fourgon Jägermeister Racing Team", "annee": "1972", "cat": "Utilitaire", "num": "", "pilote": "", "course": "", "echelle": "1/18", "prix": 150.0, "pmin": 120.0, "pmax": 180.0, "etat": "Boîte d'origine sous blister d'origine non ouvert (blister légèrement déchiré sur un angle)", "notes": "Unique Edition, distribué par Speidel Replicars, référence probable 30106 (non lue), livrée orange/blanc Jägermeister", "pid": 0}, {"photo": "Camions/CAM_036.jpg", "thumb": "CAM_036.jpg", "fab": "Eligor", "ref": "", "marque": "Renault", "modele": "AE Magnum transporteur Renault Sport F1", "annee": "1993", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Formule 1 saison 1993 (probable)", "echelle": "1/43", "prix": 55.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine Renault Boutique violette avec fenêtre, semi-remorque gris argent en place, complet", "notes": "Édition Renault Boutique (fabriqué par Eligor, probable), sponsors elf, Bull, Magneti Marelli", "pid": 0}, {"photo": "Camions/CAM_037.jpg", "thumb": "CAM_037.jpg", "fab": "Eligor", "ref": "", "marque": "Renault", "modele": "AE Magnum transporteur Benetton Renault Formula 1 Racing Team", "annee": "1995", "cat": "Transporteur course", "num": "1", "pilote": "Michael Schumacher / Johnny Herbert", "course": "Formule 1 saison 1995", "echelle": "1/43", "prix": 55.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine Renault Boutique violette avec fenêtre, complet, calage polystyrène", "notes": "Édition Renault Boutique (Eligor probable), livrée Benetton bleue avec Ligue n°1 sur la caisse, Drive Alkoholfrei", "pid": 0}, {"photo": "Camions/CAM_038.jpg", "thumb": "CAM_038.jpg", "fab": "Joal", "ref": "", "marque": "Mercedes-Benz", "modele": "Actros 1840 semi-remorque fourgon Aldi Marché", "annee": "", "cat": "Camion", "num": "", "pilote": "", "course": "", "echelle": "1/50", "prix": 35.0, "pmin": 25.0, "pmax": 45.0, "etat": "Boîte d'origine fenêtre, camion et semi bleus en place, calage polystyrène", "notes": "Série Compact Special Europe, référence non visible", "pid": 0}, {"photo": "Camions/CAM_039.jpg", "thumb": "CAM_039.jpg", "fab": "Eligor", "ref": "", "marque": "Renault", "modele": "AE Magnum transporteur Rothmans Williams Renault F1", "annee": "1995", "cat": "Transporteur course", "num": "", "pilote": "Damon Hill / David Coulthard", "course": "Formule 1 saison 1995 (probable)", "echelle": "1/43", "prix": 55.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine Renault Boutique violette avec fenêtre, complet", "notes": "Édition Renault Boutique (Eligor probable), sponsors elf, Sanyo, Segafredo, Goodyear, OZ", "pid": 0}, {"photo": "Camions/CAM_040.jpg", "thumb": "CAM_040.jpg", "fab": "Eligor", "ref": "", "marque": "Volvo", "modele": "FH12 420 transporteur Ligier Formule 1 Parmalat", "annee": "1996", "cat": "Transporteur course", "num": "9", "pilote": "Olivier Panis", "course": "Formule 1 saison 1996", "echelle": "1/43", "prix": 55.0, "pmin": 40.0, "pmax": 70.0, "etat": "Boîte d'origine grise Sport avec fenêtre, complet, calage polystyrène", "notes": "Fabricant non lu sur la boîte (Eligor probable, boîte série Sport), livrée Ligier JS43 n°9 Panis, sponsors Parmalat, Kibon, Honda, Arisco", "pid": 0}, {"photo": "Camions/CAM_041.jpg", "thumb": "CAM_041.jpg", "fab": "Inconnu", "ref": "", "marque": "Iveco", "modele": "Stralis semi-remorque Scuderia Ferrari transporteur", "annee": "2005", "cat": "Transporteur course", "num": "", "pilote": "", "course": "Formule 1 (probable)", "echelle": "1/43", "prix": 45.0, "pmin": 30.0, "pmax": 60.0, "etat": "Boîte d'origine rouge Iveco fenêtre non ouverte, complet", "notes": "Coffret promotionnel Iveco (fabricant probable New Ray ou Ixo), échelle estimée 1/43, année estimée", "pid": 0}, {"photo": "Camions/CAM_042.jpg", "thumb": "CAM_042.jpg", "fab": "Norev", "ref": "187703", "marque": "Fiat", "modele": "Bartoletti 306/2 transporteur Movie Truck (film Le Mans)", "annee": "1970", "cat": "Transporteur course", "num": "", "pilote": "", "course": "24 Heures du Mans 1970 (film Le Mans)", "echelle": "1/18", "prix": 200.0, "pmin": 180.0, "pmax": 250.0, "etat": "Boîte d'origine Norev Collectors Limited Edition, avec surcarton d'expédition, neuf", "notes": "Étiquette : Bartoletti 306/2 Movie Truck 1970 Red, référence lue 187703 (Ferrari transporteur du film Le Mans de Steve McQueen), photo montage de 4 vues de la boîte", "pid": 0}, {"photo": "Camions/CAM_043.jpg", "thumb": "CAM_043.jpg", "fab": "CMR", "ref": "CMR206", "marque": "Commer", "modele": "TS3 Three-Car Transporter Ecurie Ecosse", "annee": "1959", "cat": "Transporteur course", "num": "", "pilote": "", "course": "24 Heures du Mans / Ecurie Ecosse", "echelle": "1/18", "prix": 220.0, "pmin": 180.0, "pmax": 260.0, "etat": "Boîte d'origine CMR noire avec surcarton, transporteur calé sous papier de soie, neuf", "notes": "Classic Model Replicars, code-barres 0748723945320, photo montage de 3 vues (objet, boîte, étiquette), bleu métallisé / argent", "pid": 0}];
+const DEFAULT_SORT = 'fab';
+const SHOW_ETAT = '1' === '1';
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniq = k => [...new Set(DATA.map(d => d[k]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}));
+const fill = (sel, vals) => vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+fill($('#fFab'), uniq('fab')); fill($('#fMarque'), uniq('marque')); fill($('#fCat'), uniq('cat')); fill($('#fEch'), uniq('echelle'));
+if (!DATA.some(d=>d.pid)) document.querySelector('#fSort option[value="pid"]').remove();
+$('#fSort').value = DEFAULT_SORT;
+
+// chips fabricant (raccourci)
+const chips = $('#chips');
+const countBy = {}; DATA.forEach(d => countBy[d.fab]=(countBy[d.fab]||0)+1);
+uniq('fab').forEach(f => { const c=document.createElement('span'); c.className='chip'; c.dataset.v=f; c.textContent=`${f} (${countBy[f]})`; c.onclick=()=>{ $('#fFab').value = ($('#fFab').value===f?'':f); render(); }; chips.appendChild(c); });
+
+let view = [];
+function render(){
+  const fab=$('#fFab').value, marque=$('#fMarque').value, cat=$('#fCat').value, ech=$('#fEch').value, q=$('#fQ').value.trim().toLowerCase(), sort=$('#fSort').value;
+  view = DATA.filter(d => (!fab||d.fab===fab) && (!marque||d.marque===marque) && (!cat||d.cat===cat) && (!ech||d.echelle===ech) &&
+    (!q || [d.fab,d.ref,d.marque,d.modele,d.pilote,d.course,d.annee,d.num,d.notes,d.pid?'post-it '+d.pid:''].join(' ').toLowerCase().includes(q)));
+  const cmp = {
+    'fab': (a,b)=> a.fab.localeCompare(b.fab)|| a.ref.localeCompare(b.ref,undefined,{numeric:true}),
+    'marque': (a,b)=> a.marque.localeCompare(b.marque)|| a.annee.localeCompare(b.annee),
+    'annee': (a,b)=> a.annee.localeCompare(b.annee)|| a.marque.localeCompare(b.marque),
+    'prix-': (a,b)=> b.prix-a.prix, 'prix+': (a,b)=> a.prix-b.prix,
+    'pilote': (a,b)=> a.pilote.localeCompare(b.pilote),
+    'pid': (a,b)=> (a.pid||9999)-(b.pid||9999),
+  }[sort]; view.sort(cmp);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v===fab));
+  $('#grid').innerHTML = view.map((d,i) => `
+    <article class="card">
+      <div class="img" data-i="${i}"><img loading="lazy" src="thumbs/${esc(d.thumb)}" alt="${esc(d.marque+' '+d.modele)}"></div>
+      <div class="body">
+        <div class="fab"><b>${esc(d.fab)}</b>${d.ref?' · réf. '+esc(d.ref):''} · ${esc(d.echelle)}</div>
+        <div class="title">${d.pid?`<span class="pid" title="N° post-it">${d.pid}</span>`:''}${d.num?`<span class="num">${esc(d.num)}</span>`:''}${esc(d.marque)} ${esc(d.modele)}</div>
+        <div class="sub">${esc(d.pilote)}${d.pilote&&d.course?' — ':''}${esc(d.course)}</div>
+        ${SHOW_ETAT&&d.etat?`<div class="sub">${esc(d.etat)}</div>`:''}
+        ${d.notes?`<div class="sub"><i>${esc(d.notes)}</i></div>`:''}
+        <div class="meta"><span>${esc(d.cat)} · ${esc(d.annee)}</span>
+          <span class="price">${d.prix?d.prix.toFixed(0)+' €':'—'}${d.pmin&&d.pmax?`<small>(${d.pmin.toFixed(0)}–${d.pmax.toFixed(0)})</small>`:''}</span></div>
+      </div>
+    </article>`).join('');
+  $('#empty').style.display = view.length?'none':'block';
+  const total = view.reduce((s,d)=>s+d.prix,0);
+  $('#count').textContent = `${DATA.length} modèles`;
+  $('#stats').textContent = `${view.length} affiché${view.length>1?'s':''} · total estimé ${total.toFixed(0)} €`;
+}
+['fFab','fMarque','fCat','fEch','fSort'].forEach(id => $('#'+id).onchange = render);
+$('#fQ').oninput = render;
+$('#reset').onclick = () => { ['fFab','fMarque','fCat','fEch','fQ'].forEach(id=>$('#'+id).value=''); $('#fSort').value=DEFAULT_SORT; render(); };
+
+// lightbox
+let cur=0;
+function show(i){ cur=(i+view.length)%view.length; const d=view[cur];
+  $('#lbImg').src = 'medium/'+d.thumb; $('#lbCap').textContent = `${d.fab} ${d.ref} — ${d.marque} ${d.modele} · ${d.pilote} · ${d.prix.toFixed(0)} €`; $('#lb').classList.add('on'); }
+$('#grid').addEventListener('click', e => { const t=e.target.closest('.img'); if(t) show(+t.dataset.i); });
+$('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
+$('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
+$('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
+document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
+render();
+</script>
+</body>
+</html>
