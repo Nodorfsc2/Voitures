@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection miniatures</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#c8102e}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:40px 24px}
+h1{margin:0 0 6px;font-size:1.8rem;letter-spacing:.3px}
+p.lead{margin:0 0 28px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+a.card{display:block;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-radius:12px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+a.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:var(--accent)}
+a.card .t{font-size:1.15rem;font-weight:700;color:var(--accent)}
+a.card .d{margin-top:6px;font-size:.88rem;color:var(--muted)}
+a.card .n{margin-top:12px;font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Collection miniatures</h1>
+  <p class="lead">Choisissez une partie de la collection.</p>
+  <div class="grid">
+    <a class="card" href="catalogue.html"><div class="t">1/43</div><div class="d">Voitures à l'échelle 1/43, en boîte</div><div class="n">279 pièces</div></a>
+    <a class="card" href="118.html"><div class="t">1/18</div><div class="d">Voitures à l'échelle 1/18</div><div class="n">370 pièces</div></a>
+    <a class="card" href="143sb.html"><div class="t">Sans boîte</div><div class="d">Miniatures 1/43 sans boîte</div><div class="n">217 pièces</div></a>
+    <a class="card" href="124.html"><div class="t">1/24</div><div class="d">Voitures à l'échelle 1/24</div><div class="n">63 pièces</div></a>
+    <a class="card" href="camions.html"><div class="t">Camions</div><div class="d">Camions et transporteurs</div><div class="n">42 pièces</div></a>
+    <a class="card" href="divers.html"><div class="t">Divers</div><div class="d">Figurines, avions, dioramas…</div><div class="n">33 pièces</div></a>
+  </div>
+</main>
+</body>
+</html>
