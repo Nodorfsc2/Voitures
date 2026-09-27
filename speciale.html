@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pièces spéciales</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#8a6d1f;--chip:#ececea}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--accent:#d4b04a;--chip:#2c2c2c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:.3px}
+h1 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+h1 a.back{font-weight:400;font-size:.85rem;margin-left:14px;color:var(--accent);text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.bar label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.9rem;min-width:150px}
+input[type=search]{min-width:220px}
+button.reset{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;align-self:flex-end}
+.stats{font-size:.85rem;color:var(--muted);margin-left:auto;align-self:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);border:1px solid transparent;font-size:.82rem;cursor:pointer;user-select:none}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.card .img{aspect-ratio:4/3;background:#000;cursor:zoom-in;overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .fab{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.card .fab b{color:var(--accent)}
+.card .title{font-weight:600;font-size:1rem;line-height:1.25}
+.card .sub{font-size:.85rem;color:var(--muted)}
+.card .meta{font-size:.8rem;color:var(--muted);margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:1.05rem;color:var(--ink)}
+.price small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
+.q{display:inline-block;background:var(--ink);color:var(--card);border-radius:4px;padding:0 6px;font-weight:700;font-size:.72rem;margin-right:6px;vertical-align:middle}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px}
+#lb.on{display:flex}
+#lb img{max-width:95vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#lb .cap{color:#fff;font-size:.95rem;text-align:center;max-width:90vw}
+#lb .x{position:absolute;top:14px;right:20px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:3rem;cursor:pointer;padding:0 18px;user-select:none;opacity:.7}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:0}#lb .next{right:0}
+footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
+@media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Pièces spéciales <small id="count"></small><a class="back" href="monnaies.html">&larr; Toutes les monnaies</a></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
+  <div class="bar">
+    <label>Pays
+      <select id="fPays"><option value="">Tous</option></select></label>
+    <label>Type
+      <select id="fType"><option value="">Tous</option></select></label>
+    <label>Qualité
+      <select id="fQual"><option value="">Toutes</option></select></label>
+    <label>Année
+      <select id="fAnnee"><option value="">Toutes</option></select></label>
+    <label>Trier par
+      <select id="fSort">
+        <option value="pays">Pays / année</option>
+        <option value="annee">Année</option>
+        <option value="prix-">Prix décroissant</option>
+        <option value="prix+">Prix croissant</option>
+        <option value="photo">N° de photo</option>
+      </select></label>
+    <label>Recherche
+      <input type="search" id="fQ" placeholder="pays, année, désignation…"></label>
+    <button class="reset" id="reset">Réinitialiser</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main><div class="grid" id="grid"></div><div class="empty" id="empty" style="display:none">Aucune pièce ne correspond aux filtres.</div></main>
+<footer>Prix indicatifs en euros, basés sur les ventes récentes (eBay, Delcampe, Leboncoin, boutiques numismatiques). UNC = neuve non circulée, BU = brillant universel, BE = belle épreuve. Cliquer sur une photo pour l'agrandir.</footer>
+
+<div id="lb"><span class="x">&times;</span><span class="nav prev">&#8249;</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><span class="nav next">&#8250;</span></div>
+
+<script>
+const DATA = [{"photo": "Pieces/speciale/SPE_001.jpg", "thumb": "SPE_001.jpg", "pays": "France", "des": "10 € argent Coq 2014", "annee": "2014", "type": "Commémorative", "faciale": 10.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "UNC", "tirage": "", "prix": 15.0, "pmin": 12.0, "pmax": 20.0, "etat": "Carte de présentation Monnaie de Paris (Coq 2014) avec capsule, pièce brillante", "notes": "Argent 333 17 g, 10 Euros Coq 2014 (revers Marianne stylisée sur SPE_004, avers coq SPE_001). Aussi SPE_004. Sur la même carte on aperçoit à droite une pièce en or (LIBERTE EGALITE) non cadrée dans ce lot (probable 50 € ou 5 € or Coq 2014, à vérifier sur une autre photo)"}, {"photo": "Pieces/speciale/SPE_002.jpg", "thumb": "SPE_002.jpg", "pays": "France", "des": "2 € commémorative Pierre de Coubertin", "annee": "2013", "type": "Commémorative", "faciale": 2.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "BU", "tirage": "", "prix": 6.0, "pmin": 4.0, "pmax": 8.0, "etat": "Coincard bleue Monnaie de Paris, pièce brillante", "notes": "150 ans de la naissance de Pierre de Coubertin, RF 2013. Aussi SPE_003 (même pièce, autre angle)"}, {"photo": "Pieces/speciale/SPE_005.jpg", "thumb": "SPE_005.jpg", "pays": "Portugal", "des": "Sachet de 50 x 1 cent", "annee": "2002", "type": "Rouleau/sachet", "faciale": 0.5, "nb": "50", "emetteur": "", "qual": "UNC", "tirage": "", "prix": 8.0, "pmin": 5.0, "pmax": 12.0, "etat": "Sachet plastique scellé (sachet de rouleau), pièces neuves rouges brillantes", "notes": "Post-it manuscrit : PORTUGAL 2002 1 ct x50. Millésime 2002 lisible sur quelques pièces, quantité 50 non recomptée (probable)"}, {"photo": "Pieces/speciale/SPE_006.jpg", "thumb": "SPE_006.jpg", "pays": "France", "des": "Médaille essai L'Europe des 15 1995-2003", "annee": "2003", "type": "Essai/fantaisie", "faciale": 0.0, "nb": "1", "emetteur": "privé (essai)", "qual": "UNC", "tirage": "", "prix": 8.0, "pmin": 5.0, "pmax": 12.0, "etat": "Capsule plastique dans petite boîte carton violette/bleue avec mousse, boîte usée", "notes": "Médaille cupronickel 41 mm 31 g, avers carte de l'Europe L'EUROPE DES 15 1995-2003 avec mention essai et poinçons, revers carte avec 12 médaillons (SPE_006). Aussi SPE_007 (avers). Sans valeur faciale"}, {"photo": "Pieces/speciale/SPE_008.jpg", "thumb": "SPE_008.jpg", "pays": "France", "des": "30 euro argent E.Leclerc Demain l'Euro", "annee": "1996", "type": "Autre", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "BU", "tirage": "30 000 ex.", "prix": 15.0, "pmin": 12.0, "pmax": 20.0, "etat": "Écrin bleu velours avec certificat, capsule, pièce brillante", "notes": "Euro temporaire E.LECLERC opération Demain l'Euro 14-26 octobre 1996, gravure Claude Cardot (L'enlèvement d'Europe d'après Jean Cousin), frappé par la Monnaie de Paris, Argent 900 13 g 30 mm, tirage 30 000, poinçon corne d'abondance. Pas de cours légal"}, {"photo": "Pieces/speciale/SPE_009.jpg", "thumb": "SPE_009.jpg", "pays": "Belgique", "des": "5 écu argent Charles Quint", "annee": "1987", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie royale de Belgique", "qual": "UNC", "tirage": "", "prix": 25.0, "pmin": 20.0, "pmax": 35.0, "etat": "Écrin bleu à charnière (velours et satin), pièce avec léger ternissement/patine", "notes": "30e anniversaire du traité de Rome, Argent 833 22.85 g 37 mm, tirage 1 000 000. Avers Charles Quint (non photographié). Valeur faciale en écus (5 ECU), pas de faciale euro"}, {"photo": "Pieces/speciale/SPE_010.jpg", "thumb": "SPE_010.jpg", "pays": "Multi-pays", "des": "Album Euro Collection 12 pays 96 pièces", "annee": "2002", "type": "Album", "faciale": 46.56, "nb": "96", "emetteur": "", "qual": "UNC", "tirage": "", "prix": 60.0, "pmin": 45.0, "pmax": 90.0, "etat": "Album 2 volets, plateaux noirs avec drapeaux, sous film plastique, complet apparemment", "notes": "12 pays fondateurs (B, D, E, IRL, F, GR, I, L, NL, A, P, FIN) x 8 valeurs = 96 pièces, millésimes 1999-2002 (probable). Album distinct de SPE_011 (visible à droite de la photo). Nb pièces estimé non recompté"}, {"photo": "Pieces/speciale/SPE_011.jpg", "thumb": "SPE_011.jpg", "pays": "Multi-pays", "des": "Album Euro Collector Pocket Edition 12 pays 96 pièces", "annee": "2002", "type": "Album", "faciale": 46.56, "nb": "96", "emetteur": "", "qual": "UNC", "tirage": "", "prix": 70.0, "pmin": 50.0, "pmax": 100.0, "etat": "Album cartonné bleu 4 volets à alvéoles, avec notice carte d'Europe, complet apparemment", "notes": "Euro Collector Pocket Edition (Univers Coins), 12 pays fondateurs (A, B, D, E, F, FIN, GR, I, IRL, L, NL, P) x 8 valeurs = 96 pièces, millésimes 1999-2002 (probable). Cotes 2026 : 60-100 € complet. Nb pièces estimé non recompté"}];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniq = k => [...new Set(DATA.map(d => d[k]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}));
+const fill = (sel, vals) => vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+fill($('#fPays'), uniq('pays')); fill($('#fType'), uniq('type')); fill($('#fQual'), uniq('qual')); fill($('#fAnnee'), uniq('annee'));
+const chips = $('#chips');
+const countBy = {}; DATA.forEach(d => countBy[d.pays]=(countBy[d.pays]||0)+1);
+uniq('pays').forEach(f => { const c=document.createElement('span'); c.className='chip'; c.dataset.v=f; c.textContent=`${f} (${countBy[f]})`; c.onclick=()=>{ $('#fPays').value = ($('#fPays').value===f?'':f); render(); }; chips.appendChild(c); });
+const fmt = n => n ? n.toFixed(2).replace('.',',').replace(',00','') : '';
+let view = [];
+function render(){
+  const pays=$('#fPays').value, type=$('#fType').value, qual=$('#fQual').value, annee=$('#fAnnee').value, q=$('#fQ').value.trim().toLowerCase(), sort=$('#fSort').value;
+  view = DATA.filter(d => (!pays||d.pays===pays) && (!type||d.type===type) && (!qual||d.qual===qual) && (!annee||d.annee===annee) &&
+    (!q || [d.pays,d.des,d.annee,d.type,d.emetteur,d.qual,d.tirage,d.etat,d.notes,d.thumb].join(' ').toLowerCase().includes(q)));
+  const cmp = {
+    'pays': (a,b)=> a.pays.localeCompare(b.pays)|| a.annee.localeCompare(b.annee)|| a.des.localeCompare(b.des),
+    'annee': (a,b)=> a.annee.localeCompare(b.annee)|| a.pays.localeCompare(b.pays),
+    'prix-': (a,b)=> b.prix-a.prix, 'prix+': (a,b)=> a.prix-b.prix,
+    'photo': (a,b)=> a.thumb.localeCompare(b.thumb),
+  }[sort]; view.sort(cmp);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v===pays));
+  $('#grid').innerHTML = view.map((d,i) => `
+    <article class="card">
+      <div class="img" data-i="${i}"><img loading="lazy" src="thumbs/${esc(d.thumb)}" alt="${esc(d.pays+' '+d.des)}"></div>
+      <div class="body">
+        <div class="fab"><b>${esc(d.pays)}</b>${d.annee?' · '+esc(d.annee):''}${d.emetteur?' · '+esc(d.emetteur):''}</div>
+        <div class="title">${d.qual?`<span class="q">${esc(d.qual)}</span>`:''}${esc(d.des)}</div>
+        <div class="sub">${esc(d.type)}${d.nb?' · '+esc(d.nb)+' pièce'+(+d.nb>1?'s':''):''}${d.faciale?' · faciale '+fmt(d.faciale)+' €':''}${d.tirage?' · '+esc(d.tirage):''}</div>
+        ${d.etat?`<div class="sub">${esc(d.etat)}</div>`:''}
+        ${d.notes?`<div class="sub"><i>${esc(d.notes)}</i></div>`:''}
+        <div class="meta"><span>${esc(d.thumb.replace('.jpg',''))}</span>
+          <span class="price">${d.prix?d.prix.toFixed(0)+' €':'—'}${d.pmin&&d.pmax?`<small>(${d.pmin.toFixed(0)}–${d.pmax.toFixed(0)})</small>`:''}</span></div>
+      </div>
+    </article>`).join('');
+  $('#empty').style.display = view.length?'none':'block';
+  const total = view.reduce((s,d)=>s+d.prix,0);
+  $('#count').textContent = `${DATA.length} lots`;
+  $('#stats').textContent = `${view.length} affiché${view.length>1?'s':''} · total estimé ${total.toFixed(0)} €`;
+}
+['fPays','fType','fQual','fAnnee','fSort'].forEach(id => $('#'+id).onchange = render);
+$('#fQ').oninput = render;
+$('#reset').onclick = () => { ['fPays','fType','fQual','fAnnee','fQ'].forEach(id=>$('#'+id).value=''); $('#fSort').value='pays'; render(); };
+let cur=0;
+function show(i){ cur=(i+view.length)%view.length; const d=view[cur];
+  $('#lbImg').src = 'medium/'+d.thumb; $('#lbCap').textContent = `${d.pays} ${d.annee} — ${d.des} · ${d.prix.toFixed(0)} €`; $('#lb').classList.add('on'); }
+$('#grid').addEventListener('click', e => { const t=e.target.closest('.img'); if(t) show(+t.dataset.i); });
+$('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
+$('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
+$('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
+document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
+render();
+</script>
+</body>
+</html>
