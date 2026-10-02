@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Album</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#8a2b2b;--chip:#ececea}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--accent:#e08585;--chip:#2c2c2c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:.3px}
+h1 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+h1 a.back{font-weight:400;font-size:.85rem;margin-left:14px;color:var(--accent);text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.bar label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.9rem;min-width:150px}
+input[type=search]{min-width:220px}
+button.reset{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;align-self:flex-end}
+.stats{font-size:.85rem;color:var(--muted);margin-left:auto;align-self:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);border:1px solid transparent;font-size:.82rem;cursor:pointer;user-select:none}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.card .img{aspect-ratio:4/3;background:#000;cursor:zoom-in;overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .fab{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.card .fab b{color:var(--accent)}
+.card .title{font-weight:600;font-size:1rem;line-height:1.25}
+.card .sub{font-size:.85rem;color:var(--muted)}
+.card .meta{font-size:.8rem;color:var(--muted);margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:1.05rem;color:var(--ink)}
+.price small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
+.pos{display:inline-block;background:var(--accent);color:#fff;border-radius:4px;padding:0 5px;font-weight:700;letter-spacing:0}
+.q{display:inline-block;background:var(--ink);color:var(--card);border-radius:4px;padding:0 6px;font-weight:700;font-size:.72rem;margin-right:6px;vertical-align:middle}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px}
+#lb.on{display:flex}
+#lb img{max-width:95vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#lb .cap{color:#fff;font-size:.95rem;text-align:center;max-width:90vw}
+#lb .x{position:absolute;top:14px;right:20px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:3rem;cursor:pointer;padding:0 18px;user-select:none;opacity:.7}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:0}#lb .next{right:0}
+footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
+@media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Album <small id="count"></small><a class="back" href="timbres.html">&larr; Tous les timbres</a></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
+  <div class="bar">
+    <label>Pays
+      <select id="fPays"><option value="">Tous</option></select></label>
+    <label>Type
+      <select id="fType"><option value="">Tous</option></select></label>
+    <label>Qualité
+      <select id="fQual"><option value="">Toutes</option></select></label>
+    <label>Année
+      <select id="fAnnee"><option value="">Toutes</option></select></label>
+    <label>Trier par
+      <select id="fSort">
+        <option value="pays">Pays / année</option>
+        <option value="annee">Année</option>
+        <option value="prix-">Prix décroissant</option>
+        <option value="prix+">Prix croissant</option>
+        <option value="photo">N° de photo / position</option>
+      </select></label>
+    <label>Recherche
+      <input type="search" id="fQ" placeholder="pays, année, désignation…"></label>
+    <button class="reset" id="reset">Réinitialiser</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main><div class="grid" id="grid"></div><div class="empty" id="empty" style="display:none">Aucun article ne correspond aux filtres.</div></main>
+<footer>Prix indicatifs en euros, basés sur les ventes récentes (eBay, Delcampe, Leboncoin, négociants). Plusieurs articles peuvent partager une même photo : la position (G1, D2, rangée 1…) les localise. Neuf ** = sans charnière, Neuf * = avec charnière. Cliquer sur une photo pour l'agrandir.</footer>
+
+<div id="lb"><span class="x">&times;</span><span class="nav prev">&#8249;</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><span class="nav next">&#8250;</span></div>
+
+<script>
+const DATA = [{"photo": "Timbres/album/ALB_001.jpg", "thumb": "ALB_001.jpg", "pos": "rangée 1-2", "pays": "Hongrie", "des": "Timbres-taxe Portó 1953 « 1903-1953 » 50 ans du timbre-taxe, série verte 4 fillér à 2 Ft", "annee": "1953", "type": "Série", "faciale": "4 fillér à 2 Ft", "nb": "11", "cat": "", "qual": "Oblitéré", "tirage": "", "prix": 2.0, "pmin": 1.0, "pmax": 3.0, "etat": "Sous bandes transparentes, oblitérations à vagues, quelques dents courtes", "notes": "Étiquette de page 2.1. Inscription « 1903-1953 Ötven éves a Magyar Posta portó bélyeg ». Rangée 1 : 2 Ft, 1,20 Ft, 4, 6, 8, 10 fillér. Rangée 2 : 14, 20, 30, 40, 80 fillér (il manque le 60 fillér pour la série complète de 12)"}, {"photo": "Timbres/album/ALB_001.jpg", "thumb": "ALB_001.jpg", "pos": "rangée 3-4", "pays": "Hongrie", "des": "Timbres-taxe Portó série rouge chiffres sur écusson (Légrády Sándor) 4 à 80 fillér", "annee": "1958-1969", "type": "Série", "faciale": "4 à 80 fillér", "nb": "14", "cat": "", "qual": "Oblitéré", "tirage": "", "prix": 2.0, "pmin": 1.0, "pmax": 3.0, "etat": "Sous bandes transparentes, oblitérations à vagues, un timbre décentré", "notes": "Mention « Légrády Sándor » sous les timbres, un cachet daté « 58 V 3 ». Rangée 3 : 4, 6, 8, 10, 12, 14, 16 fillér. Rangée 4 : 20, 30, 40, 50, 60, 70, 80 fillér. Série complète des 14 valeurs (probable)"}, {"photo": "Timbres/album/ALB_001.jpg", "thumb": "ALB_001.jpg", "pos": "rangée 5 + rangée 6 à droite", "pays": "Hongrie", "des": "Timbres-taxe Portó série brune cor postal, chiffres 4 fillér à 1,20 Ft", "annee": "1951-1956", "type": "Série", "faciale": "4 fillér à 1,20 Ft", "nb": "9", "cat": "", "qual": "Oblitéré", "tirage": "", "prix": 1.5, "pmin": 0.5, "pmax": 2.5, "etat": "Sous bandes transparentes, oblitérations légères à moyennes", "notes": "Inscription « Magyar Posta » verticale avec cor de poste. Rangée 5 : 4, 6, 8, 10, 40, 50, 60 fillér, 1,20 Ft (« 120 Forint »). Rangée 6 à droite : 20 fillér (même série, isolé)"}, {"photo": "Timbres/album/ALB_001.jpg", "thumb": "ALB_001.jpg", "pos": "rangée 6 à gauche", "pays": "Hongrie", "des": "Timbres-taxe Portó série lie-de-vin / magenta chiffres 4 à 60 fillér", "annee": "1965-1969", "type": "Lot", "faciale": "4 à 60 fillér", "nb": "5", "cat": "", "qual": "Oblitéré", "tirage": "", "prix": 1.0, "pmin": 0.5, "pmax": 1.5, "etat": "Sous bandes transparentes, oblitérations à vagues", "notes": "Valeurs : 4, 10, 20, 30, 60 fillér (série incomplète, probable émission 1965). Étiquette de page 2.1"}];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniq = k => [...new Set(DATA.map(d => d[k]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}));
+const fill = (sel, vals) => vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+fill($('#fPays'), uniq('pays')); fill($('#fType'), uniq('type')); fill($('#fQual'), uniq('qual')); fill($('#fAnnee'), uniq('annee'));
+const chips = $('#chips');
+const countBy = {}; DATA.forEach(d => countBy[d.pays]=(countBy[d.pays]||0)+1);
+uniq('pays').forEach(f => { const c=document.createElement('span'); c.className='chip'; c.dataset.v=f; c.textContent=`${f} (${countBy[f]})`; c.onclick=()=>{ $('#fPays').value = ($('#fPays').value===f?'':f); render(); }; chips.appendChild(c); });
+const fmt = n => n ? n.toFixed(2).replace('.',',').replace(',00','') : '';
+let view = [];
+function render(){
+  const pays=$('#fPays').value, type=$('#fType').value, qual=$('#fQual').value, annee=$('#fAnnee').value, q=$('#fQ').value.trim().toLowerCase(), sort=$('#fSort').value;
+  view = DATA.filter(d => (!pays||d.pays===pays) && (!type||d.type===type) && (!qual||d.qual===qual) && (!annee||d.annee===annee) &&
+    (!q || [d.pays,d.des,d.annee,d.type,d.pos,d.cat,d.faciale,d.qual,d.tirage,d.etat,d.notes,d.thumb].join(' ').toLowerCase().includes(q)));
+  const cmp = {
+    'pays': (a,b)=> a.pays.localeCompare(b.pays)|| a.annee.localeCompare(b.annee)|| a.des.localeCompare(b.des),
+    'annee': (a,b)=> a.annee.localeCompare(b.annee)|| a.pays.localeCompare(b.pays),
+    'prix-': (a,b)=> b.prix-a.prix, 'prix+': (a,b)=> a.prix-b.prix,
+    'photo': (a,b)=> a.thumb.localeCompare(b.thumb) || a.pos.localeCompare(b.pos,'fr',{numeric:true}),
+  }[sort]; view.sort(cmp);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v===pays));
+  $('#grid').innerHTML = view.map((d,i) => `
+    <article class="card">
+      <div class="img" data-i="${i}"><img loading="lazy" src="thumbs/${esc(d.thumb)}" alt="${esc(d.pays+' '+d.des)}"></div>
+      <div class="body">
+        <div class="fab"><b>${esc(d.pays)}</b>${d.annee?' · '+esc(d.annee):''}${d.pos?' · <span class="pos">'+esc(d.pos)+'</span>':''}</div>
+        <div class="title">${d.qual?`<span class="q">${esc(d.qual)}</span>`:''}${esc(d.des)}</div>
+        <div class="sub">${esc(d.type)}${d.nb?' · '+esc(d.nb)+' timbre'+(+d.nb>1?'s':''):''}${d.faciale?' · '+esc(d.faciale):''}${d.cat?' · '+esc(d.cat):''}${d.tirage?' · '+esc(d.tirage):''}</div>
+        ${d.etat?`<div class="sub">${esc(d.etat)}</div>`:''}
+        ${d.notes?`<div class="sub"><i>${esc(d.notes)}</i></div>`:''}
+        <div class="meta"><span>${esc(d.thumb.replace('.jpg',''))}${d.pos?' · '+esc(d.pos):''}</span>
+          <span class="price">${d.prix?fmt(d.prix)+' €':'—'}${d.pmin&&d.pmax?`<small>(${fmt(d.pmin)}–${fmt(d.pmax)})</small>`:''}</span></div>
+      </div>
+    </article>`).join('');
+  $('#empty').style.display = view.length?'none':'block';
+  const total = view.reduce((s,d)=>s+d.prix,0);
+  $('#count').textContent = `${DATA.length} articles`;
+  $('#stats').textContent = `${view.length} affiché${view.length>1?'s':''} · total estimé ${total.toFixed(0)} €`;
+}
+['fPays','fType','fQual','fAnnee','fSort'].forEach(id => $('#'+id).onchange = render);
+$('#fQ').oninput = render;
+$('#reset').onclick = () => { ['fPays','fType','fQual','fAnnee','fQ'].forEach(id=>$('#'+id).value=''); $('#fSort').value='pays'; render(); };
+let cur=0;
+function show(i){ cur=(i+view.length)%view.length; const d=view[cur];
+  $('#lbImg').src = 'medium/'+d.thumb; $('#lbCap').textContent = `${d.pays} ${d.annee} — ${d.des}${d.pos?' ('+d.pos+')':''} · ${fmt(d.prix)} €`; $('#lb').classList.add('on'); }
+$('#grid').addEventListener('click', e => { const t=e.target.closest('.img'); if(t) show(+t.dataset.i); });
+$('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
+$('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
+$('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
+document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
+render();
+</script>
+</body>
+</html>
