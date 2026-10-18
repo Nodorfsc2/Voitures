@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pièces – Puiseux</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#8a6d1f;--chip:#ececea}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--accent:#d4b04a;--chip:#2c2c2c}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:20px 24px 12px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+h1{margin:0 0 4px;font-size:1.4rem;letter-spacing:.3px}
+h1 small{font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+h1 a.back{font-weight:400;font-size:.85rem;margin-left:14px;color:var(--accent);text-decoration:none}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+.bar label{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:3px}
+select,input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.9rem;min-width:150px}
+input[type=search]{min-width:220px}
+button.reset{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;align-self:flex-end}
+.stats{font-size:.85rem;color:var(--muted);margin-left:auto;align-self:flex-end}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{padding:5px 11px;border-radius:999px;background:var(--chip);border:1px solid transparent;font-size:.82rem;cursor:pointer;user-select:none}
+.chip.on{background:var(--accent);color:#fff}
+main{padding:20px 24px;max-width:1500px;margin:0 auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.card .img{aspect-ratio:4/3;background:#000;cursor:zoom-in;overflow:hidden}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.card .fab{font-size:.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+.card .fab b{color:var(--accent)}
+.card .title{font-weight:600;font-size:1rem;line-height:1.25}
+.card .sub{font-size:.85rem;color:var(--muted)}
+.card .meta{font-size:.8rem;color:var(--muted);margin-top:auto;padding-top:6px;display:flex;justify-content:space-between;align-items:baseline}
+.price{font-weight:700;font-size:1.05rem;color:var(--ink)}
+.price small{font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
+.q{display:inline-block;background:var(--ink);color:var(--card);border-radius:4px;padding:0 6px;font-weight:700;font-size:.72rem;margin-right:6px;vertical-align:middle}
+.empty{text-align:center;color:var(--muted);padding:60px 0}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:10px}
+#lb.on{display:flex}
+#lb img{max-width:95vw;max-height:82vh;object-fit:contain;border-radius:6px}
+#lb .cap{color:#fff;font-size:.95rem;text-align:center;max-width:90vw}
+#lb .x{position:absolute;top:14px;right:20px;color:#fff;font-size:2rem;cursor:pointer;line-height:1}
+#lb .nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:3rem;cursor:pointer;padding:0 18px;user-select:none;opacity:.7}
+#lb .nav:hover{opacity:1}
+#lb .prev{left:0}#lb .next{right:0}
+footer{padding:16px 24px 30px;font-size:.78rem;color:var(--muted);text-align:center}
+.tog{display:none}
+@media (max-width:700px){
+  header{position:static;padding:12px 14px 10px}
+  h1{font-size:1.1rem}
+  .tog{display:inline-block;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:.85rem;cursor:pointer;margin-top:8px}
+  .tog.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .bar,.chips{display:none}
+  header.open .bar{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+  header.open .chips{display:flex}
+  .bar label:has(#fQ){grid-column:1/-1}
+  select,input[type=search]{min-width:0;width:100%}
+  button.reset{align-self:end}
+  .stats{grid-column:1/-1;margin-left:0;font-size:.8rem}
+  main{padding:12px 10px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{min-width:0}
+  .card .meta{flex-wrap:wrap;gap:2px 8px}
+  .card .body{padding:9px 10px 10px}
+  .card .title{font-size:.9rem}
+  .card .sub,.card .meta{font-size:.76rem}
+  .price{font-size:.95rem}
+}
+@media print{header{position:static}.card{break-inside:avoid}#lb,.bar,.chips{display:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Pièces <small id="count"></small><a class="back" href="puiseux.html">&larr; Collection Puiseux</a></h1>
+  <button class="tog" id="tog">Filtres ▾</button>
+  <div class="bar">
+    <label>Pays
+      <select id="fPays"><option value="">Tous</option></select></label>
+    <label>Type
+      <select id="fType"><option value="">Tous</option></select></label>
+    <label>Qualité
+      <select id="fQual"><option value="">Toutes</option></select></label>
+    <label>Année
+      <select id="fAnnee"><option value="">Toutes</option></select></label>
+    <label>Trier par
+      <select id="fSort">
+        <option value="pays">Pays / année</option>
+        <option value="annee">Année</option>
+        <option value="prix-">Prix décroissant</option>
+        <option value="prix+">Prix croissant</option>
+        <option value="photo">N° de photo</option>
+      </select></label>
+    <label>Recherche
+      <input type="search" id="fQ" placeholder="pays, année, désignation…"></label>
+    <button class="reset" id="reset">Réinitialiser</button>
+    <span class="stats" id="stats"></span>
+  </div>
+  <div class="chips" id="chips"></div>
+</header>
+<main><div class="grid" id="grid"></div><div class="empty" id="empty" style="display:none">Aucune pièce ne correspond aux filtres.</div></main>
+<footer>Prix indicatifs en euros, basés sur les ventes récentes (eBay, Delcampe, CGB, Numista) et, pour l'argent, sur la valeur métal. Plusieurs pièces identiques sur une même photo forment un seul lot. Cliquer sur une photo pour l'agrandir.</footer>
+
+<div id="lb"><span class="x">&times;</span><span class="nav prev">&#8249;</span><img id="lbImg" alt=""><div class="cap" id="lbCap"></div><span class="nav next">&#8250;</span></div>
+
+<script>
+const DATA = [{"photo": "Photos-1-001/Pieces/PUP_001.jpg", "thumb": "PUP_001.jpg", "pays": "France", "des": "10 francs Génie de la Bastille (Jimenez)", "annee": "1986", "type": "Lot", "faciale": 0.0, "nb": "4", "emetteur": "Monnaie de Paris", "qual": "circulée", "tirage": "", "prix": 3.0, "pmin": 2.0, "pmax": 6.0, "etat": "Vrac, nickel brillant à patiné, petites traces de circulation", "notes": "Nickel 6,5 g, 4 x 10 F 1986 signature JIMENEZ, faciale totale 40 F, vérifier variante fautée 1986 (non visible)"}, {"photo": "Photos-1-001/Pieces/PUP_002.jpg", "thumb": "PUP_002.jpg", "pays": "France", "des": "10 francs Léon Gambetta", "annee": "1982", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 1.5, "pmin": 1.0, "pmax": 3.0, "etat": "Vrac, légère patine", "notes": "Nickel 10 g, faciale 10 F"}, {"photo": "Photos-1-001/Pieces/PUP_003.jpg", "thumb": "PUP_003.jpg", "pays": "France", "des": "10 francs Victor Hugo", "annee": "1985", "type": "Lot", "faciale": 0.0, "nb": "3", "emetteur": "Monnaie de Paris", "qual": "circulée", "tirage": "", "prix": 3.0, "pmin": 2.0, "pmax": 5.0, "etat": "Vrac, patines variables (1 pièce plus sombre)", "notes": "Nickel 10 g, 3 x 10 F commémorative, faciale totale 30 F"}, {"photo": "Photos-1-001/Pieces/PUP_004.jpg", "thumb": "PUP_004.jpg", "pays": "France", "des": "10 francs Roland Garros", "annee": "1988", "type": "Lot", "faciale": 0.0, "nb": "2", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 2.0, "pmin": 1.5, "pmax": 4.0, "etat": "Vrac, une pièce patinée une brillante", "notes": "Nickel 6,5 g, 2 x 10 F commémorative, faciale totale 20 F"}, {"photo": "Photos-1-001/Pieces/PUP_005.jpg", "thumb": "PUP_005.jpg", "pays": "France", "des": "10 francs François Rude", "annee": "1984", "type": "Lot", "faciale": 0.0, "nb": "7", "emetteur": "Monnaie de Paris", "qual": "circulée", "tirage": "", "prix": 6.0, "pmin": 4.0, "pmax": 10.0, "etat": "Vrac, patine légère à moyenne", "notes": "Nickel 10 g, 7 x 10 F commémorative, faciale totale 70 F"}, {"photo": "Photos-1-001/Pieces/PUP_006.jpg", "thumb": "PUP_006.jpg", "pays": "France", "des": "10 francs Millénaire Capétien (Hugues Capet)", "annee": "1987", "type": "Lot", "faciale": 0.0, "nb": "3", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 3.0, "pmin": 2.0, "pmax": 5.0, "etat": "Vrac, patine légère", "notes": "Nickel 6,5 g, 3 x 10 F commémorative, faciale totale 30 F"}, {"photo": "Photos-1-001/Pieces/PUP_007.jpg", "thumb": "PUP_007.jpg", "pays": "France", "des": "1 franc État français (Travail Famille Patrie)", "annee": "1943", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "", "qual": "circulée", "tirage": "", "prix": 0.5, "pmin": 0.2, "pmax": 1.0, "etat": "Vrac, usure et oxydation de l'aluminium", "notes": "Aluminium 1,3 g, faciale 1 F"}, {"photo": "Photos-1-001/Pieces/PUP_008.jpg", "thumb": "PUP_008.jpg", "pays": "France", "des": "50 centimes État français (Travail Famille Patrie)", "annee": "1942", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "", "qual": "circulée", "tirage": "", "prix": 0.5, "pmin": 0.2, "pmax": 1.0, "etat": "Vrac, usure normale", "notes": "Aluminium, faciale 0,50 F, type léger ou lourd non vérifié"}, {"photo": "Photos-1-001/Pieces/PUP_009.jpg", "thumb": "PUP_009.jpg", "pays": "France", "des": "5 francs Semeuse argent", "annee": "1960-1964", "type": "Lot", "faciale": 0.0, "nb": "5", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 85.0, "pmin": 80.0, "pmax": 100.0, "etat": "Vrac, bel aspect, légères patines", "notes": "Argent 835 12 g = 10,02 g fin par pièce, millésimes 1960 1962 1963 1964 1964, valeur métal ~17 € pièce (argent ~1,7 €/g) = ~85 €, faciale totale 25 F"}, {"photo": "Photos-1-001/Pieces/PUP_010.jpg", "thumb": "PUP_010.jpg", "pays": "France", "des": "100 francs Statue de la Liberté argent", "annee": "1986", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 22.0, "pmax": 30.0, "etat": "Vrac, brillant, légères traces", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~23 € (argent ~1,7 €/g), faciale 100 F"}, {"photo": "Photos-1-001/Pieces/PUP_011.jpg", "thumb": "PUP_011.jpg", "pays": "France", "des": "100 francs Statue de la Liberté argent", "annee": "1986", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 22.0, "pmax": 30.0, "etat": "Vrac, brillant, légères traces", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~23 € (argent ~1,7 €/g), faciale 100 F, pièce distincte de PUP_010"}, {"photo": "Photos-1-001/Pieces/PUP_012.jpg", "thumb": "PUP_012.jpg", "pays": "France", "des": "100 francs Panthéon argent", "annee": "", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 22.0, "pmin": 20.0, "pmax": 25.0, "etat": "Vrac, revers (arbre) seul visible, bel éclat, légères traces", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 € (argent ~1,60 €/g), faciale 100 F, millésime non visible (sur l'avers, 1982-2000)"}, {"photo": "Photos-1-001/Pieces/PUP_013.jpg", "thumb": "PUP_013.jpg", "pays": "France", "des": "100 francs Émile Zola (Germinal) argent", "annee": "1985", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, bel éclat, légères marques de contact", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, centenaire de Germinal"}, {"photo": "Photos-1-001/Pieces/PUP_014.jpg", "thumb": "PUP_014.jpg", "pays": "France", "des": "100 francs Statue de la Liberté argent", "annee": "1986", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, légère patine grise", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, centenaire 1886-1986, frappe courante (pas BE)"}, {"photo": "Photos-1-001/Pieces/PUP_015.jpg", "thumb": "PUP_015.jpg", "pays": "France", "des": "100 francs Général La Fayette argent", "annee": "1987", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, avers portrait visible, bel éclat", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, millésime 1987 (type émis uniquement en 1987)"}, {"photo": "Photos-1-001/Pieces/PUP_016.jpg", "thumb": "PUP_016.jpg", "pays": "France", "des": "100 francs Marie Curie argent", "annee": "1984", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, légère patine dorée sur le listel", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, revers rameaux Physique Chimie"}, {"photo": "Photos-1-001/Pieces/PUP_017.jpg", "thumb": "PUP_017.jpg", "pays": "France", "des": "100 francs Émile Zola (Germinal) argent", "annee": "1985", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, bel éclat", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, pièce différente de PUP_013 (même type)"}, {"photo": "Photos-1-001/Pieces/PUP_018.jpg", "thumb": "PUP_018.jpg", "pays": "France", "des": "100 francs Statue de la Liberté argent", "annee": "1986", "type": "Commémorative", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 24.0, "pmin": 21.0, "pmax": 28.0, "etat": "Vrac, légère patine, photo un peu floue", "notes": "Argent 900 15 g = 13,5 g fin, valeur métal ~21,6 €, faciale 100 F, pièce différente de PUP_014 (même type)"}, {"photo": "Photos-1-001/Pieces/PUP_019.jpg", "thumb": "PUP_019.jpg", "pays": "France", "des": "10 francs Hercule argent", "annee": "1967", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 38.0, "pmin": 36.0, "pmax": 42.0, "etat": "Vrac, bel éclat, légères marques", "notes": "Argent 900 25 g = 22,5 g fin, valeur métal ~36 €, faciale 10 F"}, {"photo": "Photos-1-001/Pieces/PUP_020.jpg", "thumb": "PUP_020.jpg", "pays": "France", "des": "10 francs Hercule argent", "annee": "1967", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 38.0, "pmin": 36.0, "pmax": 42.0, "etat": "Vrac, légère patine irisée", "notes": "Argent 900 25 g = 22,5 g fin, valeur métal ~36 €, faciale 10 F, pièce différente de PUP_019"}, {"photo": "Photos-1-001/Pieces/PUP_021.jpg", "thumb": "PUP_021.jpg", "pays": "France", "des": "10 francs Hercule argent", "annee": "1967", "type": "Pièce isolée", "faciale": 0.0, "nb": "1", "emetteur": "Monnaie de Paris", "qual": "SUP", "tirage": "", "prix": 38.0, "pmin": 36.0, "pmax": 42.0, "etat": "Vrac, bel éclat", "notes": "Argent 900 25 g = 22,5 g fin, valeur métal ~36 €, faciale 10 F, pièce différente de PUP_019 et PUP_020"}];
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uniq = k => [...new Set(DATA.map(d => d[k]).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'fr',{numeric:true}));
+const fill = (sel, vals) => vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
+fill($('#fPays'), uniq('pays')); fill($('#fType'), uniq('type')); fill($('#fQual'), uniq('qual')); fill($('#fAnnee'), uniq('annee'));
+const chips = $('#chips');
+const countBy = {}; DATA.forEach(d => countBy[d.pays]=(countBy[d.pays]||0)+1);
+uniq('pays').forEach(f => { const c=document.createElement('span'); c.className='chip'; c.dataset.v=f; c.textContent=`${f} (${countBy[f]})`; c.onclick=()=>{ $('#fPays').value = ($('#fPays').value===f?'':f); render(); }; chips.appendChild(c); });
+const fmt = n => n ? n.toFixed(2).replace('.',',').replace(',00','') : '';
+let view = [];
+function render(){
+  const pays=$('#fPays').value, type=$('#fType').value, qual=$('#fQual').value, annee=$('#fAnnee').value, q=$('#fQ').value.trim().toLowerCase(), sort=$('#fSort').value;
+  view = DATA.filter(d => (!pays||d.pays===pays) && (!type||d.type===type) && (!qual||d.qual===qual) && (!annee||d.annee===annee) &&
+    (!q || [d.pays,d.des,d.annee,d.type,d.emetteur,d.qual,d.tirage,d.etat,d.notes,d.thumb].join(' ').toLowerCase().includes(q)));
+  const cmp = {
+    'pays': (a,b)=> a.pays.localeCompare(b.pays)|| a.annee.localeCompare(b.annee)|| a.des.localeCompare(b.des),
+    'annee': (a,b)=> a.annee.localeCompare(b.annee)|| a.pays.localeCompare(b.pays),
+    'prix-': (a,b)=> b.prix-a.prix, 'prix+': (a,b)=> a.prix-b.prix,
+    'photo': (a,b)=> a.thumb.localeCompare(b.thumb),
+  }[sort]; view.sort(cmp);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c.dataset.v===pays));
+  $('#grid').innerHTML = view.map((d,i) => `
+    <article class="card">
+      <div class="img" data-i="${i}"><img loading="lazy" src="thumbs/${esc(d.thumb)}" alt="${esc(d.pays+' '+d.des)}"></div>
+      <div class="body">
+        <div class="fab"><b>${esc(d.pays)}</b>${d.annee?' · '+esc(d.annee):''}${d.emetteur?' · '+esc(d.emetteur):''}</div>
+        <div class="title">${d.qual?`<span class="q">${esc(d.qual)}</span>`:''}${esc(d.des)}</div>
+        <div class="sub">${esc(d.type)}${d.nb?' · '+esc(d.nb)+' pièce'+(+d.nb>1?'s':''):''}${d.faciale?' · faciale '+fmt(d.faciale)+' €':''}${d.tirage?' · '+esc(d.tirage):''}</div>
+        ${d.etat?`<div class="sub">${esc(d.etat)}</div>`:''}
+        ${d.notes?`<div class="sub"><i>${esc(d.notes)}</i></div>`:''}
+        <div class="meta"><span>${esc(d.thumb.replace('.jpg',''))}</span>
+          <span class="price">${d.prix?d.prix.toFixed(0)+' €':'—'}${d.pmin&&d.pmax?`<small>(${d.pmin.toFixed(0)}–${d.pmax.toFixed(0)})</small>`:''}</span></div>
+      </div>
+    </article>`).join('');
+  $('#empty').style.display = view.length?'none':'block';
+  const total = view.reduce((s,d)=>s+d.prix,0);
+  $('#count').textContent = `${DATA.length} lots`;
+  $('#stats').textContent = `${view.length} affiché${view.length>1?'s':''} · total estimé ${total.toFixed(0)} €`;
+}
+['fPays','fType','fQual','fAnnee','fSort'].forEach(id => $('#'+id).onchange = render);
+$('#fQ').oninput = render;
+$('#reset').onclick = () => { ['fPays','fType','fQual','fAnnee','fQ'].forEach(id=>$('#'+id).value=''); $('#fSort').value='pays'; render(); };
+let cur=0;
+function show(i){ cur=(i+view.length)%view.length; const d=view[cur];
+  $('#lbImg').src = 'medium/'+d.thumb; $('#lbCap').textContent = `${d.pays} ${d.annee} — ${d.des} · ${d.prix.toFixed(0)} €`; $('#lb').classList.add('on'); }
+$('#grid').addEventListener('click', e => { const t=e.target.closest('.img'); if(t) show(+t.dataset.i); });
+$('#lb .x').onclick = ()=> $('#lb').classList.remove('on');
+$('#lb').onclick = e => { if(e.target.id==='lb') $('#lb').classList.remove('on'); };
+$('#lb .prev').onclick = ()=> show(cur-1); $('#lb .next').onclick = ()=> show(cur+1);
+document.addEventListener('keydown', e => { if(!$('#lb').classList.contains('on')) return; if(e.key==='Escape') $('#lb').classList.remove('on'); if(e.key==='ArrowLeft') show(cur-1); if(e.key==='ArrowRight') show(cur+1); });
+$('#tog').onclick = () => { const h=document.querySelector('header'); h.classList.toggle('open'); $('#tog').classList.toggle('on'); $('#tog').textContent = h.classList.contains('open') ? 'Filtres ▴' : 'Filtres ▾'; };
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collection Puiseux</title>
+<style>
+:root{--bg:#f4f4f2;--card:#fff;--ink:#1c1c1c;--muted:#6b6b6b;--line:#e2e2df;--accent:#2f6b4f}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--ink:#f0f0f0;--muted:#a0a0a0;--line:#333;--accent:#7cc4a0}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:900px;margin:0 auto;padding:40px 24px}
+h1{margin:0 0 6px;font-size:1.8rem;letter-spacing:.3px}
+p.lead{margin:0 0 28px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+a.card{display:block;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-radius:12px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+a.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);border-color:var(--accent)}
+a.card .t{font-size:1.15rem;font-weight:700;color:var(--accent)}
+a.card .d{margin-top:6px;font-size:.88rem;color:var(--muted)}
+a.card .n{margin-top:12px;font-size:.8rem;color:var(--muted)}
+p.tot{margin-top:24px;font-size:.9rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Collection Puiseux</h1>
+  <p class="lead">Pièces de monnaie et timbres.</p>
+  <div class="grid">
+    <a class="card" href="puiseux_pieces.html"><div class="t">Pièces</div><div class="d">Pièces de monnaie (francs, argent, commémoratives)</div><div class="n">21 lots · ~432 €</div></a>
+    <a class="card" href="puiseux_timbres.html"><div class="t">Timbres</div><div class="d">Feuilles et blocs de timbres neufs, coins datés</div><div class="n">83 articles · ~459 €</div></a>
+  </div>
+  <p class="tot">Valeur totale estimée : ~892 € (prix indicatifs de revente).</p>
+</main>
+</body>
+</html>
